@@ -432,9 +432,10 @@ private slots:
 
     // Script Page ...
 private:
-    PlainTextEdit *Script_Match_Text;
+    PlainTextEdit *Script_Find_Pattern;
+    PlainTextEdit *Script_Target;
 
-    JSEdit *JavaScript_Editor;
+    JSEdit *Script_JavaScript_Editor;
     bool Script_Modified;
     duk_context *Script_JS_Context;
 

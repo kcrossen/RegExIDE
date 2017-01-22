@@ -357,6 +357,9 @@ RegularExpressionIDE::Replace_All_Scripted ( ) {
     QRegularExpression regex = QRegularExpression(regex_pattern);
     if (regex.isValid() and
         (regex_pattern.length() > 0)) {
+        QStringList capture_groups = regex.namedCaptureGroups();
+        const int capture_groups_count = regex.captureCount() + 1;
+
         QString target_text = Apply_Target->toPlainText();
         QRegularExpressionMatchIterator regex_iterator =
                                           regex.globalMatch(target_text, Apply_Target_Offset);
@@ -379,8 +382,9 @@ RegularExpressionIDE::Replace_All_Scripted ( ) {
                                         QString(duk_safe_to_string(js_context, -1)) +
                                         QString("\n");
                 // Set up Script page for debugging
-                Script_Match_Text->clear();
-                JavaScript_Editor->Set_PlainText(replace_script);
+                Script_Find_Pattern->clear();
+                Script_Target->clear();
+                Script_JavaScript_Editor->Set_PlainText(replace_script);
                 Script_Message_Text->Set_PlainText(script_error_message +
                                                    Apply_Print_Messages +
                                                    Apply_Fatal_Error_Messages);
@@ -403,17 +407,32 @@ RegularExpressionIDE::Replace_All_Scripted ( ) {
                     QString replace_text = "";
                     duk_get_prop_string(js_context, -1 /*index*/, "replace_function");
 
-                    // Push matched text onto stack as match_string argument ...
+                    // Push matched text onto stack as match.match_0 argument property ...
                     // ... (whether it's needed or not)
-                    duk_push_string(js_context, match_text.toLatin1().data());
+                    // duk_push_string(js_context, match_text.toLatin1().data());
+                    duk_idx_t obj_idx = duk_push_object(js_context);
+                    for (int idx = 0; idx < capture_groups_count; idx += 1) {
+                        QString match_capture = match.captured(idx);
+                        QString match_name = QString("match_") + QString::number(idx);
+                        duk_push_string(js_context, match_capture.toLatin1().data());
+                        duk_put_prop_string(js_context, obj_idx, match_name.toLatin1().data());
+                        if (not capture_groups.at(idx).isNull()) {
+                            match_capture = match.captured(capture_groups.at(idx));
+                            match_name = QString("match_") + capture_groups.at(idx);
+                        }
+                        duk_push_string(js_context, match_capture.toLatin1().data());
+                        duk_put_prop_string(js_context, obj_idx, match_name.toLatin1().data());
+                    }
+
                     if (duk_pcall(js_context, 1 /*nargs*/) != 0) {
                         // Runtime error
                         script_error_message += QString("Error: ") +
                                                 QString(duk_safe_to_string(js_context, -1)) +
                                                 QString("\n");
                         // Set up Script page for debugging
-                        Script_Match_Text->Set_PlainText(match_text);
-                        JavaScript_Editor->Set_PlainText(replace_script);
+                        Script_Find_Pattern->Set_PlainText(regex_pattern);
+                        Script_Target->Set_PlainText(match.captured());
+                        Script_JavaScript_Editor->Set_PlainText(replace_script);
                         Script_Message_Text->Set_PlainText(script_error_message +
                                                            Apply_Print_Messages +
                                                            Apply_Fatal_Error_Messages);

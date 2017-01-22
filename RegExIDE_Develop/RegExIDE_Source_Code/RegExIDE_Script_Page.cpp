@@ -37,11 +37,17 @@ RegularExpressionIDE::Initialize_Script_Page_UI ( ) {
     font.setFixedPitch(true);
     font.setPointSize(15);
 
-    left_layout->addWidget(new QLabel(tr("<b>Match Text<\b>")), 0);
-    Script_Match_Text = new PlainTextEdit(this);
-    Script_Match_Text->setFont(font);
-    Script_Match_Text->setReadOnly(false);
-    left_layout->addWidget(Script_Match_Text, 100);
+    left_layout->addWidget(new QLabel(tr("<b>Find pattern<\b>")), 0);
+    Script_Find_Pattern = new PlainTextEdit(this);
+    Script_Find_Pattern->setFont(font);
+    Script_Find_Pattern->setReadOnly(false);
+    left_layout->addWidget(Script_Find_Pattern, 100);
+
+    left_layout->addWidget(new QLabel(tr("<b>Target or Matched text<\b>")), 0);
+    Script_Target = new PlainTextEdit(this);
+    Script_Target->setFont(font);
+    Script_Target->setReadOnly(false);
+    left_layout->addWidget(Script_Target, 100);
 
     QHBoxLayout *script_editor_layout = new QHBoxLayout;
     script_editor_layout->setContentsMargins(0, 0, 0, 0);
@@ -81,11 +87,11 @@ RegularExpressionIDE::Initialize_Script_Page_UI ( ) {
 
     left_layout->addLayout(script_editor_layout, 0);
 
-    JavaScript_Editor = new JSEdit(this);
-    connect(JavaScript_Editor, SIGNAL(textChanged()), this, SLOT(onScript_Editor_TextChanged()));
-    JavaScript_Editor->setWordWrapMode(QTextOption::NoWrap);
+    Script_JavaScript_Editor = new JSEdit(this);
+    connect(Script_JavaScript_Editor, SIGNAL(textChanged()), this, SLOT(onScript_Editor_TextChanged()));
+    Script_JavaScript_Editor->setWordWrapMode(QTextOption::NoWrap);
     // JavaScript_Editor->setTabStopWidth(4);
-    left_layout->addWidget(JavaScript_Editor, 800);
+    left_layout->addWidget(Script_JavaScript_Editor, 800);
 
     QPalette result_palette;
 
@@ -199,7 +205,8 @@ RegularExpressionIDE::onScript_Editor_TextChanged ( ) {
 
 void
 RegularExpressionIDE::onExampleScriptClicked ( bool ) {
-    Script_Match_Text->Set_PlainText("$2");
+    Script_Find_Pattern->Set_PlainText("\\$(?<initial>\\d+)");
+    Script_Target->Set_PlainText("$2");
     QString script_text =
 R"~~~(
 // This script replaces, on successive calls, "$2" with "\2", "\3", "\4", etc.
@@ -207,18 +214,28 @@ R"~~~(
 // It can be used whenever an unknown number of matches to a single group ...
 // ... must be captured. First replace that single group w/ "$2", then ...
 // ... Use this script to replace "$2"s with a series as above.
-// Scripts must all begin with "function replace_function(match_string) {
-function replace_function(match_string) {
-    // The argument "match_string" above is the string found by your regex.
+// Scripts must all begin with "function replace_function(match) {
+function replace_function(match) {
+    // Argument "match" has at least one property, match.match_0, which captures ..."
+    // ... the entire string found by your regex.
+    // Property match.match_1 and match.match_initial are ...
+    // ... both the first capture group's capture in this case.
     // The part you write starts below here ...
+
+    // print(Object.keys(match));
+    // print(match.match_0, match.match_1, match.match_initial);
 
     // Uncomment commented lines below to demo debug messages
     // print(typeof inc_val);
     if (typeof inc_val == "undefined") {
-        inc_val = parseInt(match_string.replace("$", ""));
-        // Or, it could be done another way as below
+        inc_val = parseInt(match.match_0.replace("$", ""));
+        // Or, it could be done a second way as below
         // var pattern = /\d+/g;
-        // inc_val = parseInt(pattern.exec(match_string));
+        // inc_val = parseInt(pattern.exec(match.match_0));
+        // Or, it could be done a third way as below
+        // inc_val = parseInt(match.match_initial);
+        // Or, it could be done a fourth way as below
+        // inc_val = parseInt(match.match_1);
     }
     // print(inc_val);
     var ret_val = "\\" + inc_val.toString();
@@ -231,23 +248,28 @@ function replace_function(match_string) {
 }
 // Scripts must all end with "}".
 )~~~";
-        JavaScript_Editor->Set_PlainText(script_text.trimmed() + "\n");
+        Script_JavaScript_Editor->Set_PlainText(script_text.trimmed() + "\n");
 }
 
 void
 RegularExpressionIDE::onAnotherExampleScriptClicked ( bool ) {
-    Script_Match_Text->Set_PlainText("[2,2]");
+    Script_Find_Pattern->Set_PlainText("\\[\\s*(?<x>\\d+)\\s*,\\s*(?<y>\\d+)\\s*\\]");
+    Script_Target->Set_PlainText("[2,2]");
     QString script_text =
 R"~~~(
 // This script "draws" a tic-tac-toe board with an "X" in the supplied position.
 // It is not intended for actual use w/ RegExIDE, but rather as a demonstration ...
 // ... of JavaScript programming techniques.
-// Scripts must all begin with "function replace_function(match_string) { ...
-function replace_function(match_string) {
-    // The argument "match_string" above is the string found by your regex.
+// Scripts must all begin with "function replace_function(match) { ...
+function replace_function(match) {
+    // Argument "match" has at least one property, match.match_0, which captures ..."
+    // ... the entire string found by your regex.
     // The part you write starts below here ...
 
-    var x_and_y = match_string.match(/(\d+)/g);
+    var x_and_y = match.match_0.match(/(\d+)/g);
+    // Or, it could be done a second way as below
+    // var x_and_y = [ match.match_x, match.match_y ];
+    // print(match.match_x, match.match_y);
     // print(x_and_y[0], x_and_y[1]);
     var top = "+-+-+-+"
     print(top);
@@ -263,24 +285,27 @@ function replace_function(match_string) {
         var bottom = "+-+-+-+";
         print(bottom);
     }
-    return match_string;
+    return match.match_0;
 
     // ... and ends above here.
     // You must return a replacement string.
 }
 // Scripts must all end with "}".
 )~~~";
-    JavaScript_Editor->Set_PlainText(script_text.trimmed() + "\n");
+    Script_JavaScript_Editor->Set_PlainText(script_text.trimmed() + "\n");
 }
 
 void
 RegularExpressionIDE::onStarterScriptClicked ( bool ) {
     QString script_text =
 R"~~~(
-// Scripts must all begin with "function replace_function(match_string) {
-function replace_function(match_string) {
-    // The argument "match_string" above is the string found by your regex.
+// Scripts must all begin with "function replace_function(match) {
+function replace_function(match) {
+    // Argument "match" has at least one property, match.match_0, which captures ..."
+    // ... the entire string found by your regex.
+    // print(match.match_0);
     // The part you write starts below here ...
+
 
 
     // ... and ends above here.
@@ -289,7 +314,7 @@ function replace_function(match_string) {
 }
 // Scripts must all end with "}".
 )~~~";
-        JavaScript_Editor->Set_PlainText(script_text.trimmed() + "\n");
+        Script_JavaScript_Editor->Set_PlainText(script_text.trimmed() + "\n");
 }
 
 void
@@ -325,7 +350,23 @@ RegularExpressionIDE::onRunScriptClicked ( bool ) {
     Print_Messages.clear();
     Script_Message_Text->clear();
 
-    if (Script_Modified) {
+    bool regex_functional = false;
+    QRegularExpression regex;
+    QRegularExpressionMatchIterator regex_iterator;
+
+    if (Script_Find_Pattern->toPlainText().trimmed().length() > 0) {
+        const QString regex_pattern = Script_Find_Pattern->toPlainText();
+        regex = QRegularExpression(regex_pattern);
+        if (regex.isValid() and (regex_pattern.length() > 0)) {
+            regex_iterator = regex.globalMatch(Script_Target->toPlainText());
+            if (regex_iterator.hasNext()) {
+                // At least one found
+                regex_functional = true;
+            }
+        }
+    }
+
+    if (Script_Modified) {        
         if (not (Script_JS_Context == NULL)) {
             duk_destroy_heap(Script_JS_Context);
             Script_JS_Context = NULL;
@@ -338,7 +379,7 @@ RegularExpressionIDE::onRunScriptClicked ( bool ) {
         duk_push_c_function(Script_JS_Context, script_native_print, DUK_VARARGS);
         duk_put_prop_string(Script_JS_Context, -2, "print");
 
-        QString replace_script = JavaScript_Editor->toPlainText();
+        QString replace_script = Script_JavaScript_Editor->toPlainText();
 
         duk_push_string(Script_JS_Context, replace_script.toLatin1().data());
         if (duk_peval(Script_JS_Context) != 0) {
@@ -353,13 +394,37 @@ RegularExpressionIDE::onRunScriptClicked ( bool ) {
         Script_Modified = false;
     }
 
-    QString match_text = Script_Match_Text->toPlainText();
     QString replace_text = "";
     duk_get_prop_string(Script_JS_Context, -1 /*index*/, "replace_function");
 
-    // Push matched text onto stack as match_string argument ...
+    // Push matched text onto stack as match.match_0 argument ...
     // ... (whether it's needed or not)
-    duk_push_string(Script_JS_Context, match_text.toLatin1().data());
+    // duk_push_string(Script_JS_Context, match_text.toLatin1().data());
+    duk_idx_t obj_idx = duk_push_object(Script_JS_Context);
+    if (Script_Find_Pattern->toPlainText().trimmed().length() == 0) {
+        QString match_text = Script_Target->toPlainText();
+        duk_push_string(Script_JS_Context, match_text.toLatin1().data());
+        duk_put_prop_string(Script_JS_Context, obj_idx, "match_0");
+    }
+    else if (regex_functional) {
+        QStringList capture_groups = regex.namedCaptureGroups();
+        const int capture_groups_count = regex.captureCount() + 1;
+
+        QRegularExpressionMatch match = regex_iterator.next();
+        for (int idx = 0; idx < capture_groups_count; idx += 1) {
+            QString match_capture = match.captured(idx);
+            QString match_name = QString("match_") + QString::number(idx);
+            duk_push_string(Script_JS_Context, match_capture.toLatin1().data());
+            duk_put_prop_string(Script_JS_Context, obj_idx, match_name.toLatin1().data());
+            if (not capture_groups.at(idx).isNull()) {
+                match_capture = match.captured(capture_groups.at(idx));
+                match_name = QString("match_") + capture_groups.at(idx);
+            }
+            duk_push_string(Script_JS_Context, match_capture.toLatin1().data());
+            duk_put_prop_string(Script_JS_Context, obj_idx, match_name.toLatin1().data());
+        }
+    }
+
     if (duk_pcall(Script_JS_Context, 1 /*nargs*/) != 0) {
         Script_Message_Text->insertPlainText(QString("Error: ") +
                                              QString(duk_safe_to_string(Script_JS_Context, -1)) +
@@ -393,10 +458,10 @@ RegularExpressionIDE::onJavaScriptReferenceTreeClicked ( QModelIndex model_index
             }
             else if ((modifiers & Qt::ControlModifier) == Qt::ControlModifier) {
                 if (clicked_value.contains("…")) {
-                    QString selected_text = JavaScript_Editor->textCursor().selectedText();
+                    QString selected_text = Script_JavaScript_Editor->textCursor().selectedText();
                     if (selected_text.length() > 0) clicked_value.replace("…", selected_text);
                 }
-                JavaScript_Editor->insertPlainText(clicked_value);
+                Script_JavaScript_Editor->insertPlainText(clicked_value);
             }
         }
     }

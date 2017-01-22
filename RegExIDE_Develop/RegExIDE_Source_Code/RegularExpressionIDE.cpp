@@ -118,12 +118,13 @@ R"~~~(
       "Category": "INSERT to UPDATE",
       "RegEx_Name": "INSERT to UPDATE Step 3",
       "RegEx_Pattern": "\\$2",
-      "Replace_Script": "function replace_function(match_string) {\n    if (typeof inc_val == \"undefined\") {\n        inc_val = parseInt(match_string.replace(\"$\", \"\"));\n    }\n    var ret_val = \"\\\\\" + inc_val.toString();\n    inc_val++;\n    return ret_val;\n}\n"
+      "Replace_Script": "function replace_function(match) {\n    if (typeof inc_val == \"undefined\") {\n        inc_val = parseInt(match.match_0.replace(\"$\", \"\"));\n    }\n    var ret_val = \"\\\\\" + inc_val.toString();\n    inc_val++;\n    return ret_val;\n}\n"
     },
     {
       "Series": "INSERT to UPDATE",
       "Series_Index": 3,
       "Series_Help": "After replace, transfer <b>Target</b> to <b>Replace pattern</b> using the <b>To Replace pattern</b> button below.",
+      "Series_After_Replace": "Target_To_Replace",
       "Category": "INSERT to UPDATE",
       "RegEx_Name": "INSERT to UPDATE Step 3",
       "RegEx_Pattern": "\\$",
@@ -135,7 +136,7 @@ R"~~~(
       "Category": "INSERT to UPDATE",
       "RegEx_Name": "INSERT to UPDATE Step 4",
       "RegEx_Pattern": "\\s*\\((\\d+),\\s*(\\d+),\\s*(\\d+),\\s*(\\d+),\\s*('[^']+'),\\s*(\\d+),\\s*('[^']+'),\\s*('[^']+'),\\s*(\\d+),\\s*(\\d+),\\s*('[^']+'),\\s*(\\d+)\\)[,;]\\n",
-      "Target": "\t(352444, 600, 450, 4554052, 'http://cdn.internet.com/photos/RsEiUEvNvsgX.jpg', 1, ‘/photos/RsEiUEvNvsgX.jpg’, '2007-09-28 11:16:17', 0, 1, '0000-00-00 00:00:00', 4),\n\t(355163, 600, 450, 1475720, 'http://cdn.internet.com/photos/2Z5YacCG7Bnb.jpg', 1, '/photos/2Z5YacCG7Bnb.jpg', '2007-09-28 17:27:35', 0, 1, '0000-00-00 00:00:00', 4),\n\t(2347669, 320, 240, 2795046, 'http://cdn.internet.com/photos/lc97ZfR6QHzH.jpg', 1, '/photos/lc97ZfR6QHzH.jpg', '2008-03-06 15:12:33', 0, 1, '0000-00-00 00:00:00', 4),\n\t(2348780, 320, 240, 2463312, 'http://cdn.internet.com/photos/TcB8R8jR2dIF.jpg', 1, '/photos/TcB8R8jR2dIF.jpg', '2008-03-06 16:27:21', 0, 1, '0000-00-00 00:00:00', 4),\n"
+      "Target": "\t(352444, 600, 450, 4554052, 'http://cdn.internet.com/photos/RsEiUEvNvsgX.jpg', 1, '/photos/RsEiUEvNvsgX.jpg', '2007-09-28 11:16:17', 0, 1, '0000-00-00 00:00:00', 4),\n\t(355163, 600, 450, 1475720, 'http://cdn.internet.com/photos/2Z5YacCG7Bnb.jpg', 1, '/photos/2Z5YacCG7Bnb.jpg', '2007-09-28 17:27:35', 0, 1, '0000-00-00 00:00:00', 4),\n\t(2347669, 320, 240, 2795046, 'http://cdn.internet.com/photos/lc97ZfR6QHzH.jpg', 1, '/photos/lc97ZfR6QHzH.jpg', '2008-03-06 15:12:33', 0, 1, '0000-00-00 00:00:00', 4),\n\t(2348780, 320, 240, 2463312, 'http://cdn.internet.com/photos/TcB8R8jR2dIF.jpg', 1, '/photos/TcB8R8jR2dIF.jpg', '2008-03-06 16:27:21', 0, 1, '0000-00-00 00:00:00', 4),\n"
     },
     {
       "Series": "Log Extracts to UPDATE",
