@@ -177,6 +177,7 @@ int main ( int argc, char *argv[] ) {
     copyright += Obligatory_Copyright_krc;
     copyright += "\n";
     copyright += Obligatory_Qt_Copyright;
+    copyright += Obligatory_PCRE_Copyright;
     copyright += Obligatory_DukTape_Copyright;
     copyright += Obligatory_X2_Copyright;
 }
