@@ -17,5 +17,7 @@ Simple directions for using the application are given on the <b>Help Tab</b>, an
 
 ![Alt text](/RegExIDE_Develop/Screenshots/RegExIDE_apply_a.jpg?raw=true "Apply Tab")
 
+![Alt text](/RegExIDE_Develop/Screenshots/RegExIDE_help_a.jpg?raw=true "Help Tab")
+
 This application is built with QT Creator 4.0.1 and based on Qt 5.6.1. 
 The project /RegExIDE/RegExIDE.pro will build the application over OS-X 10.11.6 (assuming Qt 5.6.1 or better SDK has been installed), but given the lack of any significant OS dependencies other than "Home" and application private settings directories, it should be easily buildable over Windows or Linux as well.
