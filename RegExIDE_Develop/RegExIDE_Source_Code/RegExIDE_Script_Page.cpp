@@ -53,17 +53,23 @@ RegularExpressionIDE::Initialize_Script_Page_UI ( ) {
     script_editor_layout->setContentsMargins(0, 0, 0, 0);
     script_editor_layout->addWidget(new QLabel(tr("<b>Script Editor<\b>")), 0);
 
-    QToolButton *example_script = new QToolButton();
-    example_script->setText(tr("Example Script"));
-    example_script->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
-    connect(example_script, SIGNAL(clicked(bool)), this, SLOT(onExampleScriptClicked(bool)));
-    script_editor_layout->addWidget(example_script, 0);
+    QToolButton *example_script_a = new QToolButton();
+    example_script_a->setText(tr("Example Script"));
+    example_script_a->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
+    connect(example_script_a, SIGNAL(clicked(bool)), this, SLOT(onExampleScriptAClicked(bool)));
+    script_editor_layout->addWidget(example_script_a, 0);
 
-    QToolButton *another_example_script = new QToolButton();
-    another_example_script->setText(tr("Example Script"));
-    another_example_script->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
-    connect(another_example_script, SIGNAL(clicked(bool)), this, SLOT(onAnotherExampleScriptClicked(bool)));
-    script_editor_layout->addWidget(another_example_script, 0);
+    QToolButton *example_script_b = new QToolButton();
+    example_script_b->setText(tr("Example Script"));
+    example_script_b->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
+    connect(example_script_b, SIGNAL(clicked(bool)), this, SLOT(onExampleScriptBClicked(bool)));
+    script_editor_layout->addWidget(example_script_b, 0);
+
+    QToolButton *example_script_c = new QToolButton();
+    example_script_c->setText(tr("Example Script"));
+    example_script_c->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
+    connect(example_script_c, SIGNAL(clicked(bool)), this, SLOT(onExampleScriptCClicked(bool)));
+    script_editor_layout->addWidget(example_script_c, 0);
 
     QToolButton *starter_script = new QToolButton();
     starter_script->setText(tr("Starter Script"));
@@ -204,7 +210,7 @@ RegularExpressionIDE::onScript_Editor_TextChanged ( ) {
 }
 
 void
-RegularExpressionIDE::onExampleScriptClicked ( bool ) {
+RegularExpressionIDE::onExampleScriptAClicked ( bool ) {
     Script_Find_Pattern->Set_PlainText("\\$(?<initial>\\d+)");
     Script_Target->Set_PlainText("$2");
     QString script_text =
@@ -252,7 +258,7 @@ function replace_function(match) {
 }
 
 void
-RegularExpressionIDE::onAnotherExampleScriptClicked ( bool ) {
+RegularExpressionIDE::onExampleScriptBClicked ( bool ) {
     Script_Find_Pattern->Set_PlainText("\\[\\s*(?<x>\\d+)\\s*,\\s*(?<y>\\d+)\\s*\\]");
     Script_Target->Set_PlainText("[2,2]");
     QString script_text =
@@ -294,6 +300,31 @@ function replace_function(match) {
 )~~~";
     Script_JavaScript_Editor->Set_PlainText(script_text.trimmed() + "\n");
 }
+
+    void
+    RegularExpressionIDE::onExampleScriptCClicked ( bool ) {
+        Script_Find_Pattern->Set_PlainText("(?:(?<numbers>[0-9]+)|(?<letters>[a-z]+)|(?<symbols>[@#$%&]+))+");
+        Script_Target->Set_PlainText("123abc$%&");
+        QString script_text =
+R"~~~(
+// This script demonstrates another solution to the demo example.
+// It is not intended for actual use w/ RegExIDE, but rather as a demonstration ...
+// ... of JavaScript programming techniques.
+// Scripts must all begin with "function replace_function(match) { ...
+function replace_function(match) {
+    // Argument "match" has at least one property, match.match_0, which captures ..."
+    // ... the entire string found by your regex.
+    // The part you write starts below here ...
+
+    return match.match_3 + match.match_2 + match.match_1;
+
+    // ... and ends above here.
+    // You must return a replacement string.
+}
+// Scripts must all end with "}".
+)~~~";
+        Script_JavaScript_Editor->Set_PlainText(script_text.trimmed() + "\n");
+    }
 
 void
 RegularExpressionIDE::onStarterScriptClicked ( bool ) {
