@@ -6,7 +6,6 @@ RegExIDE goes further by supporting ordered sequences of find/replace patterns t
 
 Simple directions for using the application are given on the <b>Help Tab</b>, and many practical demonstration examples are built into the application itself.
 
-![Alt text](/RegExIDE_Develop/Screenshots/RegExIDE_main_a.jpg?raw=true "Regular Expression Tab")
 
 ![Alt text](/RegExIDE_Develop/Screenshots/RegExIDE_options_a.jpg?raw=true "Options & Reference Tab")
 
