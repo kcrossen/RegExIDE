@@ -21,3 +21,5 @@ Simple directions for using the application are given on the <b>Help Tab</b>, an
 
 This application is built with QT Creator 4.0.1 and based on Qt 5.6.1. 
 The project /RegExIDE/RegExIDE.pro will build the application over OS-X 10.11.6 (assuming Qt 5.6.1 or better SDK has been installed), but given the lack of any significant OS dependencies other than "Home" and application private settings directories, it should be easily buildable over Windows or Linux as well.
+
+Aside from Qt, other significant contributions of open source code are: PCRE (Philip Hazel, University of Cambridge) and Duktape (Sami Vaarala, et al.).
