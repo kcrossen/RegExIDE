@@ -307,7 +307,7 @@ function replace_function(match) {
         Script_Target->Set_PlainText("123abc$%&");
         QString script_text =
 R"~~~(
-// This script demonstrates another solution to the demo example.
+// This script demonstrates another solution similar to the demo example.
 // It is not intended for actual use w/ RegExIDE, but rather as a demonstration ...
 // ... of JavaScript programming techniques.
 // Scripts must all begin with "function replace_function(match) { ...
@@ -316,7 +316,12 @@ function replace_function(match) {
     // ... the entire string found by your regex.
     // The part you write starts below here ...
 
-    return match.match_3 + match.match_2 + match.match_1;
+    return match.match_symbols.split("").reverse().join("") +
+           match.match_letters.split("").reverse().join("") +
+           match.match_numbers.split("").reverse().join("");
+
+    // Or, the solution below would match the demo exactly
+    // return match.match_3 + match.match_2 + match.match_1;
 
     // ... and ends above here.
     // You must return a replacement string.
