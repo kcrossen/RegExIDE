@@ -258,8 +258,8 @@ R"~~~(
 // ... Use this script to replace "$2"s with a series as above.
 // Scripts must all begin with "function replace_function(match) {
 function replace_function(match) {
-    // Argument "match" has at least one property, match.match_0, which captures ..."
-    // ... the entire string found by your regex.
+    // Argument "match" has at least one property, match.match_0, which captures ...
+    // ... entire string found by your regex, also accessible as match["match_0"].
     // Property match.match_1 and match.match_initial are ...
     // ... both the first capture group's capture in this case.
     // The part you write starts below here ...
@@ -298,42 +298,193 @@ function replace_function(match) {
 
 void
 RegularExpressionIDE::onExampleScriptBClicked ( bool ) {
-    Script_Find_Pattern->Set_PlainText("\\[\\s*(?<x>\\d+)\\s*,\\s*(?<y>\\d+)\\s*\\]");
-    Script_Target->Set_PlainText("[2,2]");
+    Script_Find_Pattern->Set_PlainText("\\s*(?<x>\\d+)\\s*,\\s*(?<y>\\d+)\\s*");
+    Script_Target->Set_PlainText("2,2");
     QString script_text =
 R"~~~(
-// This script "draws" a tic-tac-toe board with an "X" in the supplied position.
-// It is not intended for actual use w/ RegExIDE, but rather as a demonstration ...
+// This script 'draws' a tic-tac-toe board with an 'X' in the supplied position.
+// The position is given as x,y where both x and y must be between 1 and 3.
+// If no (or invalid) position given, the script moves first with an 'O', ...
+// ... otherwise the script makes its countermove also with an 'O'. Then enter ...
+// ... a valid 'X' countermove, to which the script 'O' countermoves, and repeat.
+// It is not intended for actual use w/ RegExIDE, but as a demonstration ...
 // ... of JavaScript programming techniques.
+
+// Winning runs, each of the three pairs represent board[y,x] positions ...
+// ... that if occupied by all 'X' or all 'O' consititute a win.
+var winning_runs = [ [0,0,0,1,0,2], [1,0,1,1,1,2], [2,0,2,1,2,2],
+                     [0,0,1,0,2,0], [0,1,1,1,2,1], [0,2,1,2,2,2],
+                     [0,0,1,1,2,2], [0,2,1,1,2,0] ];
+
 // Scripts must all begin with "function replace_function(match) { ...
 function replace_function(match) {
-    // Argument "match" has at least one property, match.match_0, which captures ..."
-    // ... the entire string found by your regex.
+    // Argument "match" has at least one property, match.match_0, which captures ...
+    // ... entire string found by your regex, also accessible as match["match_0"].
     // The part you write starts below here ...
 
-    var x_and_y = match.match_0.match(/(\d+)/g);
-    // Or, it could be done a second way as below
-    // var x_and_y = [ match.match_x, match.match_y ];
-    // print(match.match_x, match.match_y);
-    // print(x_and_y[0], x_and_y[1]);
-    var top = "+-+-+-+"
-    print(top);
-    for (cell_y = 0; cell_y < 3; cell_y++) {
-        var cells = "|";
-        for (cell_x = 0; cell_x < 3; cell_x++) {
-            if (((cell_x + 1) == parseInt(x_and_y[0])) &&
-                ((cell_y + 1) == parseInt(x_and_y[1]))) cells += "X";
-            else cells += " ";
-            cells += "|";
-        }
-        print(cells);
-        var bottom = "+-+-+-+";
-        print(bottom);
+    var hash_lines = "--+-+--";
+    if (typeof board == "undefined") {
+        // There's no board, set up a new one with no moves made yet.
+        board = [ [ ' ', ' ', ' '] ,
+                  [ ' ', ' ', ' '] ,
+                  [ ' ', ' ', ' '] ];
+        winner = "   ";
     }
-    return match.match_0;
+
+    // If the user has entered a valid move, make it
+    var move_x = parseInt(match.match_x) - 1;
+    var move_y = parseInt(match.match_y) - 1;
+    if (((move_x >= 0) && (move_x < 3)) &&
+        ((move_y >= 0) && (move_y < 3))) {
+        // The user plays 'X'
+        if (board[move_y][move_x] == " ") board[move_y][move_x] = "X";
+        else {
+            print("Already taken, try again.");
+            // Indicate invalid move
+            winner = "___";
+        }
+    }
+
+    var runs = [];
+
+    if (winner == "   ") {
+        for (var win_idx = 0; win_idx < winning_runs.length; win_idx++) {
+            var win = winning_runs[win_idx];
+            var run = board[win[0]][win[1]] + board[win[2]][win[3]] + board[win[4]][win[5]];
+            if (run == "XXX") {
+                print("You won.");
+                winner = run;
+                break;
+            }
+            else if (run == "OOO") {
+                print("Script alreay won.");
+                winner = run;
+                break;
+            }
+            else runs.push(run);
+        }
+    }
+
+    if (winner == "   ") {
+        // Check for moves to win and respond
+        for (var run_idx = 0; run_idx < runs.length; run_idx++) {
+            var win_run = runs[run_idx];
+            if ((win_run == " OO") || (win_run == "O O") || (win_run == "OO ")) {
+                var winner = winning_runs[run_idx];
+                if (board[winner[0]][winner[1]] == " ") board[winner[0]][winner[1]] = "O";
+                else if (board[winner[2]][winner[3]] == " ") board[winner[2]][winner[3]] = "O";
+                else if (board[winner[4]][winner[5]] == " ") board[winner[4]][winner[5]] = "O";
+                print("Script won.");
+                winner = "OOO";
+                break;
+            }
+        }
+    }
+
+    if (winner == "   ") {
+        // Check for threats and respond
+        for (var run_idx = 0; run_idx < runs.length; run_idx++) {
+            var threat_run = runs[run_idx];
+            if ((threat_run == " XX") || (threat_run == "X X") || (threat_run == "XX ")) {
+                var threat = winning_runs[run_idx];
+                if (board[threat[0]][threat[1]] == " ") board[threat[0]][threat[1]] = "O";
+                else if (board[threat[2]][threat[3]] == " ") board[threat[2]][threat[3]] = "O";
+                else if (board[threat[4]][threat[5]] == " ") board[threat[4]][threat[5]] = "O";
+                break;
+            }
+        }
+    }
+
+    // Always take center because it participates in largest number of winning runs
+    if (board[1][1] == " ") {
+        board[1][1] = "O";
+    }
+    else {
+        // List all valid moves for script, but prefer corner moves
+        var corner_moves = [];
+        var valid_moves = [];
+        for (var y = 0; y < 3; y++) {
+            for (var x = 0; x < 3; x++) {
+                if (board[y][x] == " ") {
+                    var move = [y, x];
+                    if (((y == 0) || (y == 2)) && ((x == 0) || (x == 2))) {
+                        corner_moves.push(move);
+                        valid_moves.push(move);
+                    }
+                    else valid_moves.push(move);
+                }
+            }
+        }
+
+        var my_move = [-1,-1];
+
+        // Test valid script moves looking for one that leaves script with two distinct winning ...
+        // ... next moves. Since user can't block both moves, script is left with winning move.
+        for (var move_idx = 0; move_idx < valid_moves.length; move_idx++) {
+            // Make deep copy of array
+            var test_board = JSON.parse(JSON.stringify(board));
+            var my_next_moves = [];
+            test_board[valid_moves[move_idx][0]][valid_moves[move_idx][1]] = "O";
+            for (var win_idx = 0; win_idx < winning_runs.length; win_idx++) {
+                var win = winning_runs[win_idx];
+                var run = test_board[win[0]][win[1]] + test_board[win[2]][win[3]] + test_board[win[4]][win[5]];
+                if ((run == " OO") || (run == "O O") || (run == "OO ")) {
+                    var next_move;
+                    if (test_board[win[0]][win[1]] == " ") next_move = [ win[0], win[1] ];
+                    else if (test_board[win[2]][win[3]] == " ")  next_move = [ win[2], win[3] ];
+                    else if (test_board[win[4]][win[5]] == " ")  next_move = [ win[4], win[5] ];
+                    // If we haven't found this next move already, store it
+                    for (var next_move_idx = 0; next_move_idx < my_next_moves.length; next_move_idx++) {
+                        if (next_move == my_next_moves[next_move_idx]) break; // Found this move already
+                        else if ((next_move_idx + 1) == my_next_moves.length) my_next_moves.push(next_move);
+                    }
+                }
+            }
+            if (my_next_moves.length > 1) {
+                // Script has two next move winners due to this move. Both can't be blocked.
+                my_move = valid_moves[move_idx];
+                break;
+            }
+        }
+
+        if ((my_move[0] >= 0) && (my_move[0] < 3) &&
+            (my_move[1] >= 0) && (my_move[1] < 3)) board[my_move[0]][my_move[1]] = "O";
+        else {
+            // If there's any good move, make it, otherwise pick a valid move at random and make it.
+            if (corner_moves.length > 0) my_move = corner_moves[Math.floor(Math.random() * corner_moves.length)];
+            else if (valid_moves.length > 0) my_move = valid_moves[Math.floor(Math.random() * valid_moves.length)];
+            if ((my_move[0] >= 0) && (my_move[0] < 3) &&
+                (my_move[1] >= 0) && (my_move[1] < 3)) board[my_move[0]][my_move[1]] = "O";
+        }
+    }
+
+    if (winner == "   ") {
+        for (var win_idx = 0; win_idx < winning_runs.length; win_idx++) {
+            var win = winning_runs[win_idx];
+            var run = board[win[0]][win[1]] + board[win[2]][win[3]] + board[win[4]][win[5]];
+            if (run == "OOO") {
+                winner = run;
+                print("Script won.");
+                break;
+            }
+        }
+    }
+
+    // Draw the board
+    var ret_val = "";
+    for (var y = 0; y < 3; y++) {
+        var row = " ";
+        for (var x = 0; x < 3; x++) {
+            row += board[y][x];
+            if (x < 2) row += "|";
+        }
+        ret_val += row + "\n";
+        if (y < 2) ret_val += hash_lines + "\n";
+    }
 
     // ... and ends above here.
     // You must return a replacement string.
+    return ret_val;
 }
 // Scripts must all end with "}".
 )~~~";
@@ -354,16 +505,24 @@ R"~~~(
 // ... of JavaScript programming techniques.
 // Scripts must all begin with "function replace_function(match) { ...
 function replace_function(match) {
-    // Argument "match" has at least one property, match.match_0, which captures ..."
-    // ... the entire string found by your regex.
+    // Argument "match" has at least one property, match.match_0, which captures ...
+    // ... entire string found by your regex, also accessible as match["match_0"].
     // The part you write starts below here ...
 
     return match.match_symbols.split("").reverse().join("") +
            match.match_letters.split("").reverse().join("") +
            match.match_numbers.split("").reverse().join("");
 
+    // Or, equivalently as below
+    // return match["match_symbols"].split("").reverse().join("") +
+    //        match["match_letters"].split("").reverse().join("") +
+    //        match["match_numbers"].split("").reverse().join("");
+
     // Or, the solution below would match the demo exactly
     // return match.match_3 + match.match_2 + match.match_1;
+
+    // Or, equivalently as below
+    // return match["match_3"] + match["match_2"] + match["match_1"];
 
     // ... and ends above here.
     // You must return a replacement string.
@@ -378,15 +537,16 @@ function replace_function(match) {
 
 void
 RegularExpressionIDE::onStarterScriptClicked ( bool ) {
+    Script_Find_Pattern->Set_PlainText("");
+    Script_Target->Set_PlainText("");
     QString script_text =
 R"~~~(
 // Scripts must all begin with "function replace_function(match) {
 function replace_function(match) {
-    // Argument "match" has at least one property, match.match_0, which captures ..."
-    // ... the entire string found by your regex.
+    // Argument "match" has at least one property, match.match_0, which captures ...
+    // ... entire string found by your regex, also accessible as match["match_0"].
     // print(match.match_0);
     // The part you write starts below here ...
-
 
 
     // ... and ends above here.

@@ -6,12 +6,12 @@ QList <QStringList>
 JavaScript_Reference ( ) {
     QList <QStringList> javascript_reference;
 
-    javascript_reference << QStringList({"Statement", "do statement while (condition)", "do {text += \"number: \" + i; i++;} while (i < 5);"});
+    javascript_reference << QStringList({"Statement", "do statement while (expression)", "do {text += \"number: \" + i; i++;} while (i < 5);"});
     javascript_reference << QStringList({"Statement", "for ([init]; [test]; [next])", "for (var i = 0; i < 9; i++)"});
-    javascript_reference << QStringList({"Statement", "if (condition) statement1 [else statement2]", "if (i == 0) { i += 1 } else { i += 2 }"});
+    javascript_reference << QStringList({"Statement", "if (expression) statement1 [else statement2]", "if (i == 0) { i += 1 } else { i += 2 }"});
+    javascript_reference << QStringList({"Statement", "switch(expression) { case m: statements; break; case n: statements; break; default: statements; }", "switch (new Date().getDay()) { case 0: day = 'Sunday'; break; case 1: day = 'Monday'; break; … case 6: day = 'Saturday'; }"});
     javascript_reference << QStringList({"Statement", "var", "Declares a variable: var text = \"string\";"});
-    javascript_reference << QStringList({"Statement", "while (condition) statement", "while (i < 5) {text += \"number:\" + i; i++;}"});
-
+    javascript_reference << QStringList({"Statement", "while (expression) statement", "while (i < 5) {text += \"number:\" + i; i++;}"});
 
     javascript_reference << QStringList({"Strings", "str.length", "Returns length of the string"});
     javascript_reference << QStringList({"Strings", "str.charAt(idx)", "Returns character at the index"});
