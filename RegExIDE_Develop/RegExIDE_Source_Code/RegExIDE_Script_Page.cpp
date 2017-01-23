@@ -37,17 +37,35 @@ RegularExpressionIDE::Initialize_Script_Page_UI ( ) {
     font.setFixedPitch(true);
     font.setPointSize(15);
 
-    left_layout->addWidget(new QLabel(tr("<b>Find pattern<\b>")), 0);
+    QHBoxLayout *find_target_layout = new QHBoxLayout;
+    find_target_layout->setContentsMargins(0, 0, 0, 0);
+    find_target_layout->setSpacing(2);
+
+    QVBoxLayout *find_target_left_layout = new QVBoxLayout;
+    find_target_left_layout->setContentsMargins(0, 0, 0, 0);
+    find_target_left_layout->setSpacing(2);
+
+    find_target_left_layout->addWidget(new QLabel(tr("<b>Find pattern<\b>")), 0);
     Script_Find_Pattern = new PlainTextEdit(this);
     Script_Find_Pattern->setFont(font);
     Script_Find_Pattern->setReadOnly(false);
-    left_layout->addWidget(Script_Find_Pattern, 100);
+    Script_Find_Pattern->setMinimumHeight(100);
+    find_target_left_layout->addWidget(Script_Find_Pattern, 50);
+    find_target_layout->addLayout(find_target_left_layout);
 
-    left_layout->addWidget(new QLabel(tr("<b>Target or Matched text<\b>")), 0);
+    QVBoxLayout *find_target_right_layout = new QVBoxLayout;
+    find_target_right_layout->setContentsMargins(0, 0, 0, 0);
+    find_target_right_layout->setSpacing(2);
+
+    find_target_right_layout->addWidget(new QLabel(tr("<b>Target or Matched text<\b>")), 0);
     Script_Target = new PlainTextEdit(this);
     Script_Target->setFont(font);
     Script_Target->setReadOnly(false);
-    left_layout->addWidget(Script_Target, 100);
+    Script_Target->setMinimumHeight(100);
+    find_target_right_layout->addWidget(Script_Target, 50);
+    find_target_layout->addLayout(find_target_right_layout);
+
+    left_layout->addLayout(find_target_layout, 100);
 
     QHBoxLayout *script_editor_layout = new QHBoxLayout;
     script_editor_layout->setContentsMargins(0, 0, 0, 0);
@@ -99,31 +117,49 @@ RegularExpressionIDE::Initialize_Script_Page_UI ( ) {
     // JavaScript_Editor->setTabStopWidth(4);
     left_layout->addWidget(Script_JavaScript_Editor, 800);
 
-    QPalette result_palette;
-
-    left_layout->addWidget(new QLabel(tr("<b>Replace Text<\b>")), 0);
-    Script_Replace_Text = new PlainTextEdit(this);
-    Script_Replace_Text->setFont(font);
-    Script_Replace_Text->setReadOnly(true);
-    result_palette = Script_Replace_Text->palette();
-    result_palette.setBrush(QPalette::Base, result_palette.brush(QPalette::Disabled, QPalette::Base));
-    Script_Replace_Text->setPalette(result_palette);
-    left_layout->addWidget(Script_Replace_Text, 100);
-
     left_layout->addSpacing(2);
 
     QFrame *horizontal_separator = new QFrame;
     horizontal_separator->setFrameStyle(QFrame::HLine | QFrame::Raised);
     left_layout->addWidget(horizontal_separator, 0);
 
-    left_layout->addWidget(new QLabel(tr("<b>Script Debug and Error Messages<\b>")), 0);
+    QPalette result_palette;
+
+    QHBoxLayout *replace_message_layout = new QHBoxLayout;
+    replace_message_layout->setContentsMargins(0, 0, 0, 0);
+    replace_message_layout->setSpacing(2);
+
+    QVBoxLayout *replace_message_left_layout = new QVBoxLayout;
+    replace_message_left_layout->setContentsMargins(0, 0, 0, 0);
+    replace_message_left_layout->setSpacing(2);
+
+    replace_message_left_layout->addWidget(new QLabel(tr("<b>Replace Text<\b>")), 0);
+    Script_Replace_Text = new PlainTextEdit(this);
+    Script_Replace_Text->setFont(font);
+    Script_Replace_Text->setReadOnly(true);
+    result_palette = Script_Replace_Text->palette();
+    result_palette.setBrush(QPalette::Base, result_palette.brush(QPalette::Disabled, QPalette::Base));
+    Script_Replace_Text->setPalette(result_palette);
+    Script_Replace_Text->setMinimumHeight(100);
+    replace_message_left_layout->addWidget(Script_Replace_Text, 50);
+    replace_message_layout->addLayout(replace_message_left_layout);
+
+    QVBoxLayout *replace_message_right_layout = new QVBoxLayout;
+    replace_message_right_layout->setContentsMargins(0, 0, 0, 0);
+    replace_message_right_layout->setSpacing(2);
+
+    replace_message_right_layout->addWidget(new QLabel(tr("<b>Script Debug and Error Messages<\b>")), 0);
     Script_Message_Text = new PlainTextEdit(this);
     Script_Message_Text->setFont(font);
     Script_Message_Text->setReadOnly(true);
     result_palette = Script_Message_Text->palette();
     result_palette.setBrush(QPalette::Base, result_palette.brush(QPalette::Disabled, QPalette::Base));
     Script_Message_Text->setPalette(result_palette);
-    left_layout->addWidget(Script_Message_Text, 100);
+    Script_Message_Text->setMinimumHeight(100);
+    replace_message_right_layout->addWidget(Script_Message_Text, 50);
+    replace_message_layout->addLayout(replace_message_right_layout);
+
+    left_layout->addLayout(replace_message_layout, 100);
 
     Script_JS_Context = NULL;
     Script_Modified = false;
@@ -254,7 +290,10 @@ function replace_function(match) {
 }
 // Scripts must all end with "}".
 )~~~";
-        Script_JavaScript_Editor->Set_PlainText(script_text.trimmed() + "\n");
+    Script_JavaScript_Editor->Set_PlainText(script_text.trimmed() + "\n");
+    Script_Replace_Text->clear();
+    Script_Message_Text->clear();
+    Script_Modified = true;
 }
 
 void
@@ -299,13 +338,16 @@ function replace_function(match) {
 // Scripts must all end with "}".
 )~~~";
     Script_JavaScript_Editor->Set_PlainText(script_text.trimmed() + "\n");
+    Script_Replace_Text->clear();
+    Script_Message_Text->clear();
+    Script_Modified = true;
 }
 
-    void
-    RegularExpressionIDE::onExampleScriptCClicked ( bool ) {
-        Script_Find_Pattern->Set_PlainText("(?:(?<numbers>[0-9]+)|(?<letters>[a-z]+)|(?<symbols>[@#$%&]+))+");
-        Script_Target->Set_PlainText("123abc$%&");
-        QString script_text =
+void
+RegularExpressionIDE::onExampleScriptCClicked ( bool ) {
+    Script_Find_Pattern->Set_PlainText("(?:(?<numbers>[0-9]+)|(?<letters>[a-z]+)|(?<symbols>[@#$%&]+))+");
+    Script_Target->Set_PlainText("123abc$%&");
+    QString script_text =
 R"~~~(
 // This script demonstrates another solution similar to the demo example.
 // It is not intended for actual use w/ RegExIDE, but rather as a demonstration ...
@@ -328,8 +370,11 @@ function replace_function(match) {
 }
 // Scripts must all end with "}".
 )~~~";
-        Script_JavaScript_Editor->Set_PlainText(script_text.trimmed() + "\n");
-    }
+    Script_JavaScript_Editor->Set_PlainText(script_text.trimmed() + "\n");
+    Script_Replace_Text->clear();
+    Script_Message_Text->clear();
+    Script_Modified = true;
+}
 
 void
 RegularExpressionIDE::onStarterScriptClicked ( bool ) {
@@ -350,12 +395,16 @@ function replace_function(match) {
 }
 // Scripts must all end with "}".
 )~~~";
-        Script_JavaScript_Editor->Set_PlainText(script_text.trimmed() + "\n");
+    Script_JavaScript_Editor->Set_PlainText(script_text.trimmed() + "\n");
+    Script_Replace_Text->clear();
+    Script_Message_Text->clear();
+    Script_Modified = true;
 }
 
 void
 RegularExpressionIDE::onResetScriptClicked ( bool ) {
-    Script_Replace_Text->Set_PlainText("");
+    Script_Replace_Text->clear();
+    Script_Message_Text->clear();
     Script_Modified = true;
 }
 
@@ -384,6 +433,7 @@ void
 RegularExpressionIDE::onRunScriptClicked ( bool ) {
     Script_Fatal_Error_Messages.clear();
     Print_Messages.clear();
+    Script_Replace_Text->clear();
     Script_Message_Text->clear();
 
     bool regex_functional = false;
