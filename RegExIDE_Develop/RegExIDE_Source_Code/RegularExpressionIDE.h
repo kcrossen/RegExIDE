@@ -455,13 +455,13 @@ private slots:
     onScript_Editor_TextChanged ( );
 
     void
-    onExampleScriptAClicked ( bool = false );
+    onSeriesExampleClicked ( bool = false );
 
     void
-    onExampleScriptBClicked ( bool = false );
+    onDemoExampleClicked ( bool = false );
 
     void
-    onExampleScriptCClicked ( bool = false );
+    onExtremeExampleClicked ( bool = false );
 
     void
     onStarterScriptClicked ( bool = false );

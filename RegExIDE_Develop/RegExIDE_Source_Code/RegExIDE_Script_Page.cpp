@@ -72,21 +72,21 @@ RegularExpressionIDE::Initialize_Script_Page_UI ( ) {
     script_editor_layout->addWidget(new QLabel(tr("<b>Script Editor<\b>")), 0);
 
     QToolButton *example_script_a = new QToolButton();
-    example_script_a->setText(tr("Example Script"));
+    example_script_a->setText(tr("Series Example"));
     example_script_a->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
-    connect(example_script_a, SIGNAL(clicked(bool)), this, SLOT(onExampleScriptAClicked(bool)));
+    connect(example_script_a, SIGNAL(clicked(bool)), this, SLOT(onSeriesExampleClicked(bool)));
     script_editor_layout->addWidget(example_script_a, 0);
 
     QToolButton *example_script_b = new QToolButton();
-    example_script_b->setText(tr("Example Script"));
+    example_script_b->setText(tr("Demo+ Example"));
     example_script_b->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
-    connect(example_script_b, SIGNAL(clicked(bool)), this, SLOT(onExampleScriptBClicked(bool)));
+    connect(example_script_b, SIGNAL(clicked(bool)), this, SLOT(onDemoExampleClicked(bool)));
     script_editor_layout->addWidget(example_script_b, 0);
 
     QToolButton *example_script_c = new QToolButton();
-    example_script_c->setText(tr("Example Script"));
+    example_script_c->setText(tr("Extreme Example"));
     example_script_c->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
-    connect(example_script_c, SIGNAL(clicked(bool)), this, SLOT(onExampleScriptCClicked(bool)));
+    connect(example_script_c, SIGNAL(clicked(bool)), this, SLOT(onExtremeExampleClicked(bool)));
     script_editor_layout->addWidget(example_script_c, 0);
 
     QToolButton *starter_script = new QToolButton();
@@ -246,7 +246,7 @@ RegularExpressionIDE::onScript_Editor_TextChanged ( ) {
 }
 
 void
-RegularExpressionIDE::onExampleScriptAClicked ( bool ) {
+RegularExpressionIDE::onSeriesExampleClicked ( bool ) {
     Script_Find_Pattern->Set_PlainText("\\$(?<initial>\\d+)");
     Script_Target->Set_PlainText("$2");
     QString script_text =
@@ -297,205 +297,7 @@ function replace_function(match) {
 }
 
 void
-RegularExpressionIDE::onExampleScriptBClicked ( bool ) {
-    Script_Find_Pattern->Set_PlainText("\\s*(?<x>\\d+)\\s*,\\s*(?<y>\\d+)\\s*");
-    Script_Target->Set_PlainText("2,2");
-    QString script_text =
-R"~~~(
-// This script 'draws' a tic-tac-toe board with an 'X' in the supplied position.
-// The position is given as x,y where both x and y must be between 1 and 3.
-// If no (or invalid) position given, the script moves first with an 'O', ...
-// ... otherwise the script makes its countermove also with an 'O'. Then enter ...
-// ... a valid 'X' countermove, to which the script 'O' countermoves, and repeat.
-// It is not intended for actual use w/ RegExIDE, but as a demonstration ...
-// ... of JavaScript programming techniques.
-
-// Winning runs, each of the three pairs represent board[y,x] positions ...
-// ... that if occupied by all 'X' or all 'O' consititute a win.
-var winning_runs = [ [0,0,0,1,0,2], [1,0,1,1,1,2], [2,0,2,1,2,2],
-                     [0,0,1,0,2,0], [0,1,1,1,2,1], [0,2,1,2,2,2],
-                     [0,0,1,1,2,2], [0,2,1,1,2,0] ];
-
-// Scripts must all begin with "function replace_function(match) { ...
-function replace_function(match) {
-    // Argument "match" has at least one property, match.match_0, which captures ...
-    // ... entire string found by your regex, also accessible as match["match_0"].
-    // The part you write starts below here ...
-
-    var hash_lines = "--+-+--";
-    if (typeof board == "undefined") {
-        // There's no board, set up a new one with no moves made yet.
-        board = [ [ ' ', ' ', ' '] ,
-                  [ ' ', ' ', ' '] ,
-                  [ ' ', ' ', ' '] ];
-        winner = "   ";
-    }
-
-    // If the user has entered a valid move, make it
-    var move_x = parseInt(match.match_x) - 1;
-    var move_y = parseInt(match.match_y) - 1;
-    if (((move_x >= 0) && (move_x < 3)) &&
-        ((move_y >= 0) && (move_y < 3))) {
-        // The user plays 'X'
-        if (board[move_y][move_x] == " ") board[move_y][move_x] = "X";
-        else {
-            print("Already taken, try again.");
-            // Indicate invalid move
-            winner = "___";
-        }
-    }
-
-    var runs = [];
-
-    if (winner == "   ") {
-        for (var win_idx = 0; win_idx < winning_runs.length; win_idx++) {
-            var win = winning_runs[win_idx];
-            var run = board[win[0]][win[1]] + board[win[2]][win[3]] + board[win[4]][win[5]];
-            if (run == "XXX") {
-                print("You won.");
-                winner = run;
-                break;
-            }
-            else if (run == "OOO") {
-                print("Script alreay won.");
-                winner = run;
-                break;
-            }
-            else runs.push(run);
-        }
-    }
-
-    if (winner == "   ") {
-        // Check for moves to win and respond
-        for (var run_idx = 0; run_idx < runs.length; run_idx++) {
-            var win_run = runs[run_idx];
-            if ((win_run == " OO") || (win_run == "O O") || (win_run == "OO ")) {
-                var winner = winning_runs[run_idx];
-                if (board[winner[0]][winner[1]] == " ") board[winner[0]][winner[1]] = "O";
-                else if (board[winner[2]][winner[3]] == " ") board[winner[2]][winner[3]] = "O";
-                else if (board[winner[4]][winner[5]] == " ") board[winner[4]][winner[5]] = "O";
-                print("Script won.");
-                winner = "OOO";
-                break;
-            }
-        }
-    }
-
-    if (winner == "   ") {
-        // Check for threats and respond
-        for (var run_idx = 0; run_idx < runs.length; run_idx++) {
-            var threat_run = runs[run_idx];
-            if ((threat_run == " XX") || (threat_run == "X X") || (threat_run == "XX ")) {
-                var threat = winning_runs[run_idx];
-                if (board[threat[0]][threat[1]] == " ") board[threat[0]][threat[1]] = "O";
-                else if (board[threat[2]][threat[3]] == " ") board[threat[2]][threat[3]] = "O";
-                else if (board[threat[4]][threat[5]] == " ") board[threat[4]][threat[5]] = "O";
-                break;
-            }
-        }
-    }
-
-    // Always take center because it participates in largest number of winning runs
-    if (board[1][1] == " ") {
-        board[1][1] = "O";
-    }
-    else {
-        // List all valid moves for script, but prefer corner moves
-        var corner_moves = [];
-        var valid_moves = [];
-        for (var y = 0; y < 3; y++) {
-            for (var x = 0; x < 3; x++) {
-                if (board[y][x] == " ") {
-                    var move = [y, x];
-                    if (((y == 0) || (y == 2)) && ((x == 0) || (x == 2))) {
-                        corner_moves.push(move);
-                        valid_moves.push(move);
-                    }
-                    else valid_moves.push(move);
-                }
-            }
-        }
-
-        var my_move = [-1,-1];
-
-        // Test valid script moves looking for one that leaves script with two distinct winning ...
-        // ... next moves. Since user can't block both moves, script is left with winning move.
-        for (var move_idx = 0; move_idx < valid_moves.length; move_idx++) {
-            // Make deep copy of array
-            var test_board = JSON.parse(JSON.stringify(board));
-            var my_next_moves = [];
-            test_board[valid_moves[move_idx][0]][valid_moves[move_idx][1]] = "O";
-            for (var win_idx = 0; win_idx < winning_runs.length; win_idx++) {
-                var win = winning_runs[win_idx];
-                var run = test_board[win[0]][win[1]] + test_board[win[2]][win[3]] + test_board[win[4]][win[5]];
-                if ((run == " OO") || (run == "O O") || (run == "OO ")) {
-                    var next_move;
-                    if (test_board[win[0]][win[1]] == " ") next_move = [ win[0], win[1] ];
-                    else if (test_board[win[2]][win[3]] == " ")  next_move = [ win[2], win[3] ];
-                    else if (test_board[win[4]][win[5]] == " ")  next_move = [ win[4], win[5] ];
-                    // If we haven't found this next move already, store it
-                    for (var next_move_idx = 0; next_move_idx < my_next_moves.length; next_move_idx++) {
-                        if (next_move == my_next_moves[next_move_idx]) break; // Found this move already
-                        else if ((next_move_idx + 1) == my_next_moves.length) my_next_moves.push(next_move);
-                    }
-                }
-            }
-            if (my_next_moves.length > 1) {
-                // Script has two next move winners due to this move. Both can't be blocked.
-                my_move = valid_moves[move_idx];
-                break;
-            }
-        }
-
-        if ((my_move[0] >= 0) && (my_move[0] < 3) &&
-            (my_move[1] >= 0) && (my_move[1] < 3)) board[my_move[0]][my_move[1]] = "O";
-        else {
-            // If there's any good move, make it, otherwise pick a valid move at random and make it.
-            if (corner_moves.length > 0) my_move = corner_moves[Math.floor(Math.random() * corner_moves.length)];
-            else if (valid_moves.length > 0) my_move = valid_moves[Math.floor(Math.random() * valid_moves.length)];
-            if ((my_move[0] >= 0) && (my_move[0] < 3) &&
-                (my_move[1] >= 0) && (my_move[1] < 3)) board[my_move[0]][my_move[1]] = "O";
-        }
-    }
-
-    if (winner == "   ") {
-        for (var win_idx = 0; win_idx < winning_runs.length; win_idx++) {
-            var win = winning_runs[win_idx];
-            var run = board[win[0]][win[1]] + board[win[2]][win[3]] + board[win[4]][win[5]];
-            if (run == "OOO") {
-                winner = run;
-                print("Script won.");
-                break;
-            }
-        }
-    }
-
-    // Draw the board
-    var ret_val = "";
-    for (var y = 0; y < 3; y++) {
-        var row = " ";
-        for (var x = 0; x < 3; x++) {
-            row += board[y][x];
-            if (x < 2) row += "|";
-        }
-        ret_val += row + "\n";
-        if (y < 2) ret_val += hash_lines + "\n";
-    }
-
-    // ... and ends above here.
-    // You must return a replacement string.
-    return ret_val;
-}
-// Scripts must all end with "}".
-)~~~";
-    Script_JavaScript_Editor->Set_PlainText(script_text.trimmed() + "\n");
-    Script_Replace_Text->clear();
-    Script_Message_Text->clear();
-    Script_Modified = true;
-}
-
-void
-RegularExpressionIDE::onExampleScriptCClicked ( bool ) {
+RegularExpressionIDE::onDemoExampleClicked ( bool ) {
     Script_Find_Pattern->Set_PlainText("(?:(?<numbers>[0-9]+)|(?<letters>[a-z]+)|(?<symbols>[@#$%&]+))+");
     Script_Target->Set_PlainText("123abc$%&");
     QString script_text =
@@ -526,6 +328,253 @@ function replace_function(match) {
 
     // ... and ends above here.
     // You must return a replacement string.
+}
+// Scripts must all end with "}".
+)~~~";
+    Script_JavaScript_Editor->Set_PlainText(script_text.trimmed() + "\n");
+    Script_Replace_Text->clear();
+    Script_Message_Text->clear();
+    Script_Modified = true;
+}
+
+void
+RegularExpressionIDE::onExtremeExampleClicked ( bool ) {
+    Script_Find_Pattern->Set_PlainText("\\s*(?<x>\\d+)\\s*,\\s*(?<y>\\d+)\\s*");
+    Script_Target->Set_PlainText("2,2");
+    QString script_text =
+R"~~~(
+// This script 'draws' a tic-tac-toe board with an 'X' in the supplied position.
+// The position is given as x,y where both x and y must be between 1 and 3.
+// If no (or invalid) position given, the script moves first with an 'O', ...
+// ... otherwise the script makes its countermove also with an 'O'. Then enter ...
+// ... a valid 'X' countermove, to which the script 'O' countermoves, and repeat.
+// It is not intended for actual use w/ RegExIDE, but as a demonstration ...
+// ... of JavaScript programming techniques.
+
+// Winning runs, each of the three pairs represent board[y,x] positions ...
+// ... that if occupied by all 'X' or all 'O' consititute a win.
+var winning_runs = [ [0,0,0,1,0,2], [1,0,1,1,1,2], [2,0,2,1,2,2],
+                     [0,0,1,0,2,0], [0,1,1,1,2,1], [0,2,1,2,2,2],
+                     [0,0,1,1,2,2], [0,2,1,1,2,0] ];
+
+function run_open_move(current_board, run_index) {
+    var open = winning_runs[run_index];
+    if (current_board[open[0]][open[1]] == " ") return [ open[0], open[1] ];
+    else if (current_board[open[2]][open[3]] == " ") return [ open[2], open[3] ];
+    else if (current_board[open[4]][open[5]] == " ") return [ open[4], open[5] ];
+    else return [-1,-1];
+}
+
+function make_valid_script_move(current_board, move) {
+    var valid_move = ((move[0] >= 0) && (move[0] < 3) &&
+                      (move[1] >= 0) && (move[1] < 3)) &&
+                     (current_board[move[0]][move[1]] == " ");
+    if (valid_move) current_board[move[0]][move[1]] = "O";
+    return valid_move;
+}
+
+var hash_lines = "--+-+--";
+function draw_board(current_board) {
+    var board_as_string = "";
+    for (var y = 0; y < 3; y++) {
+        var row = " ";
+        for (var x = 0; x < 3; x++) {
+            row += current_board[y][x];
+            if (x < 2) row += "|";
+        }
+        board_as_string += row + "\n";
+        if (y < 2) board_as_string += hash_lines + "\n";
+    }
+    return board_as_string;
+}
+
+// Scripts must all begin with "function replace_function(match) { ...
+function replace_function(match) {
+    // Argument "match" has at least one property, match.match_0, which captures ...
+    // ... entire string found by your regex, also accessible as match["match_0"].
+    // The part you write starts below here ...
+
+    if (typeof board == "undefined") {
+        // There's no board, set up a new one with no moves made yet.
+        board = [ [ ' ', ' ', ' '] ,
+                  [ ' ', ' ', ' '] ,
+                  [ ' ', ' ', ' '] ];
+        winner = "   ";
+        open_moves = 9;
+    }
+
+    if ((winner == "XXX") || (winner == "OOO")) print("Already have a winner.");
+    else if (open_moves == 0) print("No moves left, must be a draw.");
+    else {
+        // If the user has entered a valid move, make it
+        var move_x = parseInt(match.match_x) - 1;
+        var move_y = parseInt(match.match_y) - 1;
+        if (((move_x >= 0) && (move_x < 3)) &&
+            ((move_y >= 0) && (move_y < 3))) {
+            // The user plays 'X'
+            if (board[move_y][move_x] == " ") {
+                board[move_y][move_x] = "X";
+                open_moves--;
+            }
+            else {
+                print("Already taken, try again.");
+                // Indicate invalid move
+                winner = "___";
+            }
+        }
+    }
+
+    var runs = [];
+    if (winner == "   ") {
+        for (var win_idx = 0; win_idx < winning_runs.length; win_idx++) {
+            var win = winning_runs[win_idx];
+            var run = board[win[0]][win[1]] + board[win[2]][win[3]] + board[win[4]][win[5]];
+            if (run == "XXX") {
+                print("You win.");
+                winner = run;
+                break;
+            }
+            else if (run == "OOO") {
+                print("Script alreay won.");
+                winner = run;
+                break;
+            }
+            else runs.push(run);
+        }
+    }
+
+    if (winner == "   ") {
+        // Check for moves to win and respond
+        for (var run_idx = 0; run_idx < runs.length; run_idx++) {
+            var win_run = runs[run_idx];
+            if ((win_run == " OO") || (win_run == "O O") || (win_run == "OO ")) {
+                var winning_move = run_open_move(board, run_idx);
+                if (make_valid_script_move(board, winning_move)) {
+                    open_moves--;
+                    print("Script wins.");
+                    winner = "OOO";
+                    break;
+                }
+            }
+        }
+    }
+
+    if (winner == "   ") {
+        // Check for threats and respond
+        for (var run_idx = 0; run_idx < runs.length; run_idx++) {
+            var threat_run = runs[run_idx];
+            if ((threat_run == " XX") || (threat_run == "X X") || (threat_run == "XX ")) {
+                var blocking_move = run_open_move(board, run_idx);
+                if (make_valid_script_move(board, blocking_move)) {
+                    open_moves--;
+                    // Indicate move already made
+                    winner = "---";
+                    break;
+                }
+            }
+        }
+    }
+
+    if (winner == "   ") {
+        // Always take center, because of all moves, ...
+        // ... it participates in largest number of winning runs (four)
+        if (make_valid_script_move(board, [1,1])) {
+            open_moves--;
+            // Indicate move already made
+            winner = "---";
+        }
+        else {
+            // List all valid moves for script.
+            // Prefer corner moves which participate in ...
+            // ... second largest number of winning runs (three).
+            // All side moves participate in only two winning runs each.
+            var corner_moves = [];
+            var valid_moves = [];
+            for (var y = 0; y < 3; y++) {
+                for (var x = 0; x < 3; x++) {
+                    if (board[y][x] == " ") {
+                        var move = [y, x];
+                        if (((y == 0) || (y == 2)) && ((x == 0) || (x == 2))) {
+                            corner_moves.push(move);
+                            valid_moves.push(move);
+                        }
+                        else valid_moves.push(move);
+                    }
+                }
+            }
+
+            var my_move = [-1,-1];
+
+            // Test valid script moves looking for one that leaves script with two distinct winning ...
+            // ... next moves. Since user can't block both next moves, script must be left with ...
+            // ... at least one winning move.
+            for (var move_idx = 0; move_idx < valid_moves.length; move_idx++) {
+                // Make new deep copy of array
+                var test_board = JSON.parse(JSON.stringify(board));
+                var my_next_moves = [];
+                test_board[valid_moves[move_idx][0]][valid_moves[move_idx][1]] = "O";
+                for (var win_idx = 0; win_idx < winning_runs.length; win_idx++) {
+                    var win = winning_runs[win_idx];
+                    var run = test_board[win[0]][win[1]] + test_board[win[2]][win[3]] + test_board[win[4]][win[5]];
+                    if ((run == " OO") || (run == "O O") || (run == "OO ")) {
+                        var next_move;
+                        if (test_board[win[0]][win[1]] == " ") next_move = [ win[0], win[1] ];
+                        else if (test_board[win[2]][win[3]] == " ")  next_move = [ win[2], win[3] ];
+                        else if (test_board[win[4]][win[5]] == " ")  next_move = [ win[4], win[5] ];
+                        // If we haven't found this next move already, store it
+                        for (var next_move_idx = 0; next_move_idx < my_next_moves.length; next_move_idx++) {
+                            if (next_move == my_next_moves[next_move_idx]) break; // Found this move already
+                            else if ((next_move_idx + 1) == my_next_moves.length) my_next_moves.push(next_move);
+                        }
+                    }
+                }
+                if (my_next_moves.length > 1) {
+                    // Script has two next move winners due to this move. Both can't be blocked.
+                    my_move = valid_moves[move_idx];
+                    break;
+                }
+            }
+
+            if (make_valid_script_move(board, my_move)) {
+                open_moves--;
+                // Indicate move already made
+                winner = "---";
+            }
+            else {
+                // If there's any good move, make it, otherwise pick a valid move at random and make it.
+                if (corner_moves.length > 0) my_move = corner_moves[Math.floor(Math.random() * corner_moves.length)];
+                else if (valid_moves.length > 0) my_move = valid_moves[Math.floor(Math.random() * valid_moves.length)];
+                if (make_valid_script_move(board, my_move)) {
+                    open_moves--;
+                    // Indicate move already made
+                    winner = "---";
+                }
+            }
+        }
+    }
+
+    if ((winner == "   ") || (winner == "---")) {
+        for (var win_idx = 0; win_idx < winning_runs.length; win_idx++) {
+            var win = winning_runs[win_idx];
+            var run = board[win[0]][win[1]] + board[win[2]][win[3]] + board[win[4]][win[5]];
+            if (run == "OOO") {
+                winner = run;
+                print("Script wins.");
+                break;
+            }
+        }
+    }
+
+    // Clean up temporary indicators for this move cycle
+    if (! ((winner == "XXX") || (winner == "OOO"))) winner = "   ";
+    if ((winner == "   ") && (open_moves == 0)) print("No moves left, must be a draw.");
+
+    // Draw the board, always
+    var ret_val = draw_board(board);
+
+    // ... and ends above here.
+    // You must return a replacement string.
+    return ret_val;
 }
 // Scripts must all end with "}".
 )~~~";
