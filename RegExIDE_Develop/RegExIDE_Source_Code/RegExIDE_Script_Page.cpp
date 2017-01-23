@@ -351,13 +351,14 @@ R"~~~(
 // It is not intended for actual use w/ RegExIDE, but as a demonstration ...
 // ... of JavaScript programming techniques.
 
-// Winning runs, each of the three pairs represent board[y,x] positions ...
-// ... that if occupied by all 'X' or all 'O' consititute a win.
+// Each of the three pairs of y,x, in other words [y0,x0, y1,x1, y2,x2], represent ...
+// ... board[y,x] positions that if occupied by all 'X' or all 'O' consititute a win.
 var winning_runs = [ [0,0,0,1,0,2], [1,0,1,1,1,2], [2,0,2,1,2,2],
                      [0,0,1,0,2,0], [0,1,1,1,2,1], [0,2,1,2,2,2],
                      [0,0,1,1,2,2], [0,2,1,1,2,0] ];
 
 function run_open_move(current_board, run_index) {
+    // When a winning run is either two of 'X' or two of 'O' and one ' ' (open)
     var open = winning_runs[run_index];
     if (current_board[open[0]][open[1]] == " ") return [ open[0], open[1] ];
     else if (current_board[open[2]][open[3]] == " ") return [ open[2], open[3] ];
@@ -366,6 +367,7 @@ function run_open_move(current_board, run_index) {
 }
 
 function make_valid_script_move(current_board, move) {
+    // If this move is valid, make it and return whether move was made
     var valid_move = ((move[0] >= 0) && (move[0] < 3) &&
                       (move[1] >= 0) && (move[1] < 3)) &&
                      (current_board[move[0]][move[1]] == " ");
@@ -375,6 +377,7 @@ function make_valid_script_move(current_board, move) {
 
 var hash_lines = "--+-+--";
 function draw_board(current_board) {
+    // 'Draw' the current board into a string
     var board_as_string = "";
     for (var y = 0; y < 3; y++) {
         var row = " ";
@@ -395,14 +398,16 @@ function replace_function(match) {
     // The part you write starts below here ...
 
     if (typeof board == "undefined") {
-        // There's no board, set up a new one with no moves made yet.
+        // There's no board, set up a new one with no moves made yet ...
         board = [ [ ' ', ' ', ' '] ,
                   [ ' ', ' ', ' '] ,
                   [ ' ', ' ', ' '] ];
+        // ... and initialize other game-level variables as well.
         winner = "   ";
         open_moves = 9;
     }
 
+    // Determine whether any move can be made now
     if ((winner == "XXX") || (winner == "OOO")) print("Already have a winner.");
     else if (open_moves == 0) print("No moves left, must be a draw.");
     else {
@@ -426,6 +431,7 @@ function replace_function(match) {
 
     var runs = [];
     if (winner == "   ") {
+        // Check whether user has already won.
         for (var win_idx = 0; win_idx < winning_runs.length; win_idx++) {
             var win = winning_runs[win_idx];
             var run = board[win[0]][win[1]] + board[win[2]][win[3]] + board[win[4]][win[5]];
@@ -444,7 +450,7 @@ function replace_function(match) {
     }
 
     if (winner == "   ") {
-        // Check for moves to win and respond
+        // Is a one-move win by script currently possible?
         for (var run_idx = 0; run_idx < runs.length; run_idx++) {
             var win_run = runs[run_idx];
             if ((win_run == " OO") || (win_run == "O O") || (win_run == "OO ")) {
@@ -460,7 +466,7 @@ function replace_function(match) {
     }
 
     if (winner == "   ") {
-        // Check for threats and respond
+        // Is there a threat of a user's one-move win that must be blocked?
         for (var run_idx = 0; run_idx < runs.length; run_idx++) {
             var threat_run = runs[run_idx];
             if ((threat_run == " XX") || (threat_run == "X X") || (threat_run == "XX ")) {
@@ -477,7 +483,8 @@ function replace_function(match) {
 
     if (winner == "   ") {
         // Always take center, because of all moves, ...
-        // ... it participates in largest number of winning runs (four)
+        // ... it participates in largest number of winning runs (four).
+        // Accordingly, it also blocks the most user winning runs.
         if (make_valid_script_move(board, [1,1])) {
             open_moves--;
             // Indicate move already made
