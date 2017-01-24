@@ -582,6 +582,7 @@ RegularExpressionIDE::onOpenCatalogClicked ( bool ) {
     bool ini_success = false;
     OrderedVariantMap regexide_ini;
     if (ini_json.length() > 0) {
+        ini_json = Upgrade_Application_Initialization(ini_json);
         regexide_ini = toOrderedMap(parseJson(ini_json, ini_success));
     }
 

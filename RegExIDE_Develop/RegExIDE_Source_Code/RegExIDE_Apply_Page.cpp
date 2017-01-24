@@ -407,21 +407,27 @@ RegularExpressionIDE::Replace_All_Scripted ( ) {
                     QString replace_text = "";
                     duk_get_prop_string(js_context, -1 /*index*/, "replace_function");
 
-                    // Push matched text onto stack as match.match_0 argument property ...
+                    // Push matched text onto stack as match.group_0 argument property ...
                     // ... (whether it's needed or not)
                     // duk_push_string(js_context, match_text.toLatin1().data());
                     duk_idx_t obj_idx = duk_push_object(js_context);
                     for (int idx = 0; idx < capture_groups_count; idx += 1) {
                         QString match_capture = match.captured(idx);
-                        QString match_name = QString("match_") + QString::number(idx);
+                        QString match_name = QString("group_") + QString::number(idx);
+                        duk_push_string(js_context, match_capture.toLatin1().data());
+                        duk_put_prop_string(js_context, obj_idx, match_name.toLatin1().data());
+                        match_name = QString::number(idx);
                         duk_push_string(js_context, match_capture.toLatin1().data());
                         duk_put_prop_string(js_context, obj_idx, match_name.toLatin1().data());
                         if (not capture_groups.at(idx).isNull()) {
                             match_capture = match.captured(capture_groups.at(idx));
-                            match_name = QString("match_") + capture_groups.at(idx);
+                            match_name = QString("group_") + capture_groups.at(idx);
+                            duk_push_string(js_context, match_capture.toLatin1().data());
+                            duk_put_prop_string(js_context, obj_idx, match_name.toLatin1().data());
+                            match_name = capture_groups.at(idx);
+                            duk_push_string(js_context, match_capture.toLatin1().data());
+                            duk_put_prop_string(js_context, obj_idx, match_name.toLatin1().data());
                         }
-                        duk_push_string(js_context, match_capture.toLatin1().data());
-                        duk_put_prop_string(js_context, obj_idx, match_name.toLatin1().data());
                     }
 
                     if (duk_pcall(js_context, 1 /*nargs*/) != 0) {

@@ -179,6 +179,9 @@ private:
     void
     UI_Connect ( );
 
+    QString
+    Upgrade_Application_Initialization ( QString Initialization_JSON );
+
     bool
     Open_Application_Initialization ( );
 

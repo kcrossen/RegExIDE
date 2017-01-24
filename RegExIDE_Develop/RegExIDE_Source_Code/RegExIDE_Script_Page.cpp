@@ -222,7 +222,7 @@ RegularExpressionIDE::Initialize_Script_Page_UI ( ) {
         item_root->setData(0, Qt::ToolTipRole, item_explain);
     }
 
-    JavaScript_Referennce_Tree->expandToDepth(0);
+    // JavaScript_Referennce_Tree->expandToDepth(0);
 
     connect(JavaScript_Referennce_Tree, SIGNAL(clicked(QModelIndex)),
             this, SLOT(onJavaScriptReferenceTreeClicked(QModelIndex)));
@@ -258,26 +258,27 @@ R"~~~(
 // ... Use this script to replace "$2"s with a series as above.
 // Scripts must all begin with "function replace_function(match) {
 function replace_function(match) {
-    // Argument "match" has at least one property, match.match_0, which captures ...
-    // ... entire string found by your regex, also accessible as match["match_0"].
-    // Property match.match_1 and match.match_initial are ...
+    // Argument "match" has at least one property, match.group_0, which captures ...
+    // ... entire string found by your regex, ...
+    // ... also accessible as match["group_0"] or match['0'].
+    // Property match.group_1 and match.group_initial or match.initial are ...
     // ... both the first capture group's capture in this case.
     // The part you write starts below here ...
 
     // print(Object.keys(match));
-    // print(match.match_0, match.match_1, match.match_initial);
+    // print(match.group_0, match.group_1, match.group_initial);
 
     // Uncomment commented lines below to demo debug messages
     // print(typeof inc_val);
     if (typeof inc_val == "undefined") {
-        inc_val = parseInt(match.match_0.replace("$", ""));
+        inc_val = parseInt(match.group_0.replace("$", ""));
         // Or, it could be done a second way as below
         // var pattern = /\d+/g;
-        // inc_val = parseInt(pattern.exec(match.match_0));
+        // inc_val = parseInt(pattern.exec(match.group_0));
         // Or, it could be done a third way as below
-        // inc_val = parseInt(match.match_initial);
+        // inc_val = parseInt(match.group_initial);
         // Or, it could be done a fourth way as below
-        // inc_val = parseInt(match.match_1);
+        // inc_val = parseInt(match.group_1);
     }
     // print(inc_val);
     var ret_val = "\\" + inc_val.toString();
@@ -307,24 +308,25 @@ R"~~~(
 // ... of JavaScript programming techniques.
 // Scripts must all begin with "function replace_function(match) { ...
 function replace_function(match) {
-    // Argument "match" has at least one property, match.match_0, which captures ...
-    // ... entire string found by your regex, also accessible as match["match_0"].
+    // Argument "match" has at least one property, match.group_0, which captures ...
+    // ... entire string found by your regex, ...
+    // ... also accessible as match["group_0"] or match['0'].
     // The part you write starts below here ...
 
-    return match.match_symbols.split("").reverse().join("") +
-           match.match_letters.split("").reverse().join("") +
-           match.match_numbers.split("").reverse().join("");
+    return match.group_symbols.split("").reverse().join("") +
+           match.group_letters.split("").reverse().join("") +
+           match.group_numbers.split("").reverse().join("");
 
     // Or, equivalently as below
-    // return match["match_symbols"].split("").reverse().join("") +
-    //        match["match_letters"].split("").reverse().join("") +
-    //        match["match_numbers"].split("").reverse().join("");
+    // return match["group_symbols"].split("").reverse().join("") +
+    //        match["group_letters"].split("").reverse().join("") +
+    //        match["group_numbers"].split("").reverse().join("");
 
     // Or, the solution below would match the demo exactly
-    // return match.match_3 + match.match_2 + match.match_1;
+    // return match.group_3 + match.group_2 + match.group_1;
 
     // Or, equivalently as below
-    // return match["match_3"] + match["match_2"] + match["match_1"];
+    // return match["group_3"] + match["group_2"] + match["group_1"];
 
     // ... and ends above here.
     // You must return a replacement string.
@@ -393,8 +395,9 @@ function draw_board(current_board) {
 
 // Scripts must all begin with "function replace_function(match) { ...
 function replace_function(match) {
-    // Argument "match" has at least one property, match.match_0, which captures ...
-    // ... entire string found by your regex, also accessible as match["match_0"].
+    // Argument "match" has at least one property, match.group_0, which captures ...
+    // ... entire string found by your regex, ...
+    // ... also accessible as match["group_0"] or match['0'].
     // The part you write starts below here ...
 
     if (typeof board == "undefined") {
@@ -412,8 +415,8 @@ function replace_function(match) {
     else if (open_moves == 0) print("No moves left, must be a draw.");
     else {
         // If the user has entered a valid move, make it
-        var move_x = parseInt(match.match_x) - 1;
-        var move_y = parseInt(match.match_y) - 1;
+        var move_x = parseInt(match.x) - 1;
+        var move_y = parseInt(match.y) - 1;
         if (((move_x >= 0) && (move_x < 3)) &&
             ((move_y >= 0) && (move_y < 3))) {
             // The user plays 'X'
@@ -473,7 +476,7 @@ function replace_function(match) {
                 var blocking_move = run_open_move(board, run_idx);
                 if (make_valid_script_move(board, blocking_move)) {
                     open_moves--;
-                    // Indicate move already made
+                    // Indicate script move already made
                     winner = "---";
                     break;
                 }
@@ -487,7 +490,7 @@ function replace_function(match) {
         // Accordingly, it also blocks the most user winning runs.
         if (make_valid_script_move(board, [1,1])) {
             open_moves--;
-            // Indicate move already made
+            // Indicate script move already made
             winner = "---";
         }
         else {
@@ -531,12 +534,13 @@ function replace_function(match) {
                         // If we haven't found this next move already, store it
                         for (var next_move_idx = 0; next_move_idx < my_next_moves.length; next_move_idx++) {
                             if (next_move == my_next_moves[next_move_idx]) break; // Found this move already
-                            else if ((next_move_idx + 1) == my_next_moves.length) my_next_moves.push(next_move);
+                            else if ((next_move_idx + 1) >= my_next_moves.length) my_next_moves.push(next_move);
                         }
                     }
                 }
-                if (my_next_moves.length > 1) {
-                    // Script has two next move winners due to this move. Both can't be blocked.
+                if (my_next_moves.length >= 2) {
+                    // Script has at least two next move winners due to this move, ...
+                    // ... both can't be blocked.
                     my_move = valid_moves[move_idx];
                     break;
                 }
@@ -544,7 +548,7 @@ function replace_function(match) {
 
             if (make_valid_script_move(board, my_move)) {
                 open_moves--;
-                // Indicate move already made
+                // Indicate script move already made
                 winner = "---";
             }
             else {
@@ -553,7 +557,7 @@ function replace_function(match) {
                 else if (valid_moves.length > 0) my_move = valid_moves[Math.floor(Math.random() * valid_moves.length)];
                 if (make_valid_script_move(board, my_move)) {
                     open_moves--;
-                    // Indicate move already made
+                    // Indicate script move already made
                     winner = "---";
                 }
             }
@@ -599,9 +603,9 @@ RegularExpressionIDE::onStarterScriptClicked ( bool ) {
 R"~~~(
 // Scripts must all begin with "function replace_function(match) {
 function replace_function(match) {
-    // Argument "match" has at least one property, match.match_0, which captures ...
-    // ... entire string found by your regex, also accessible as match["match_0"].
-    // print(match.match_0);
+    // Argument "match" has at least one property, match.group_0, which captures ...
+    // ... entire string found by your regex, also accessible as match["group_0"].
+    // print(match.group_0);
     // The part you write starts below here ...
 
 
@@ -699,14 +703,14 @@ RegularExpressionIDE::onRunScriptClicked ( bool ) {
     QString replace_text = "";
     duk_get_prop_string(Script_JS_Context, -1 /*index*/, "replace_function");
 
-    // Push matched text onto stack as match.match_0 argument ...
+    // Push matched text onto stack as match.group_0 argument ...
     // ... (whether it's needed or not)
     // duk_push_string(Script_JS_Context, match_text.toLatin1().data());
     duk_idx_t obj_idx = duk_push_object(Script_JS_Context);
     if (Script_Find_Pattern->toPlainText().trimmed().length() == 0) {
         QString match_text = Script_Target->toPlainText();
         duk_push_string(Script_JS_Context, match_text.toLatin1().data());
-        duk_put_prop_string(Script_JS_Context, obj_idx, "match_0");
+        duk_put_prop_string(Script_JS_Context, obj_idx, "group_0");
     }
     else if (regex_functional) {
         QStringList capture_groups = regex.namedCaptureGroups();
@@ -715,15 +719,21 @@ RegularExpressionIDE::onRunScriptClicked ( bool ) {
         QRegularExpressionMatch match = regex_iterator.next();
         for (int idx = 0; idx < capture_groups_count; idx += 1) {
             QString match_capture = match.captured(idx);
-            QString match_name = QString("match_") + QString::number(idx);
+            QString match_name = QString("group_") + QString::number(idx);
+            duk_push_string(Script_JS_Context, match_capture.toLatin1().data());
+            duk_put_prop_string(Script_JS_Context, obj_idx, match_name.toLatin1().data());
+            match_name = QString::number(idx);
             duk_push_string(Script_JS_Context, match_capture.toLatin1().data());
             duk_put_prop_string(Script_JS_Context, obj_idx, match_name.toLatin1().data());
             if (not capture_groups.at(idx).isNull()) {
                 match_capture = match.captured(capture_groups.at(idx));
-                match_name = QString("match_") + capture_groups.at(idx);
+                match_name = QString("group_") + capture_groups.at(idx);
+                duk_push_string(Script_JS_Context, match_capture.toLatin1().data());
+                duk_put_prop_string(Script_JS_Context, obj_idx, match_name.toLatin1().data());
+                match_name = capture_groups.at(idx);
+                duk_push_string(Script_JS_Context, match_capture.toLatin1().data());
+                duk_put_prop_string(Script_JS_Context, obj_idx, match_name.toLatin1().data());
             }
-            duk_push_string(Script_JS_Context, match_capture.toLatin1().data());
-            duk_put_prop_string(Script_JS_Context, obj_idx, match_name.toLatin1().data());
         }
     }
 
