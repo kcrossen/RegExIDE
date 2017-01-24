@@ -197,6 +197,8 @@ RegularExpressionIDE::Initialize_Script_Page_UI ( ) {
     int category_root_count = 0;
     QTreeWidgetItem *category_root;
     QTreeWidgetItem *item_root;
+    QList <QTreeWidgetItem*> expand_category_root_list;
+    QStringList expand_category_list = QStringList({"Statements", "Strings"});
 
     QList <QStringList> javascript_reference = JavaScript_Reference();
 
@@ -213,6 +215,7 @@ RegularExpressionIDE::Initialize_Script_Page_UI ( ) {
             category_root_list << category_name << "";
             category_root = new QTreeWidgetItem(JavaScript_Referennce_Tree, category_root_list);
             current_category_name = category_name;
+            if (expand_category_list.contains(category_name)) expand_category_root_list.append(category_root);
         }
 
         QStringList item_root_list;
@@ -223,6 +226,10 @@ RegularExpressionIDE::Initialize_Script_Page_UI ( ) {
     }
 
     // JavaScript_Referennce_Tree->expandToDepth(0);
+    for (int list_idx = 0; list_idx < expand_category_root_list.count(); list_idx += 1) {
+        QTreeWidgetItem *expand_category_root = expand_category_root_list.at(list_idx);
+        expand_category_root->setExpanded(true);
+    }
 
     connect(JavaScript_Referennce_Tree, SIGNAL(clicked(QModelIndex)),
             this, SLOT(onJavaScriptReferenceTreeClicked(QModelIndex)));
@@ -765,6 +772,8 @@ RegularExpressionIDE::onJavaScriptReferenceTreeClicked ( QModelIndex model_index
                       sender_reference_tree->model()->data(model_index, Qt::UserRole).toString();
             if (clicked_value.startsWith("str.")) clicked_value = clicked_value.replace("str.", ".");
             else if (clicked_value.startsWith("obj.")) clicked_value = clicked_value.replace("obj.", ".");
+            else if (clicked_value.startsWith("obj[")) clicked_value = clicked_value.replace("obj[", "[");
+            else if (clicked_value.startsWith("array.")) clicked_value = clicked_value.replace("array.", ".");
             if (modifiers == Qt::NoModifier) {
                 QApplication::clipboard()->setText(clicked_value);
             }

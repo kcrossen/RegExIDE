@@ -6,6 +6,7 @@ QList <QStringList>
 JavaScript_Reference ( ) {
     QList <QStringList> javascript_reference;
 
+    javascript_reference << QStringList({"Arrays", "array.length", "Returns length of the array"});
     javascript_reference << QStringList({"Arrays", "array.toString()", "Converts an array to a string of (comma separated) array values"});
     javascript_reference << QStringList({"Arrays", "array.join(sep)", "Joins array elements into a string can specify the separator string"});
     javascript_reference << QStringList({"Arrays", "array.pop()", "Removes the last element from an array"});
@@ -14,6 +15,8 @@ JavaScript_Reference ( ) {
     javascript_reference << QStringList({"Arrays", "array.unshift()", "Adds a new element to an array (at the beginning)"});
     javascript_reference << QStringList({"Arrays", "array.slice(from[,to])", "Extracts a part of an array and returns a new array"});
     javascript_reference << QStringList({"Arrays", "array.concat(a2[,a3...])", "Creates a new array by concatenating arrays"});
+    javascript_reference << QStringList({"Arrays", "array.indexOf(value)", "Returns the position of the first found occurrence of a specified value in an array"});
+    javascript_reference << QStringList({"Arrays", "array.lastIndexOf(value)", "Returns the position of the last found occurrence of a specified value in an array"});
 
     javascript_reference << QStringList({"Global", "eval(str)", "eval(\"2+2\") "});
     javascript_reference << QStringList({"Global", "Infinity", "if (x == NaN) "});
@@ -44,10 +47,16 @@ JavaScript_Reference ( ) {
 
     javascript_reference << QStringList({"Numbers", "isFinite(x)", "eturns true if its argument is a number other than NaN, Infinity, or -Infinity"});
     javascript_reference << QStringList({"Numbers", "isNaN(x)", "Returns true if its argument is NaN (not a number)"});
+    javascript_reference << QStringList({"Numbers", "Number.isInteger(x)", "Returns true if its argument is an integer"});
+    javascript_reference << QStringList({"Numbers", "Number.isSafeInteger(x)", "Returns true if its argument is a safe integer from -(253 - 1) inclusive to 253 - 1 inclusive"});
 
     javascript_reference << QStringList({"Objects", "obj.propertyName", "Access object property, get or set"});
     javascript_reference << QStringList({"Objects", "obj[\"propertyName\"]", "Access object property, get or set"});
     javascript_reference << QStringList({"Objects", "obj.methodName()", "Access object method"});
+    javascript_reference << QStringList({"Objects", "obj.hasOwnProperty(propertyName)", "Returns a boolean indicating whether the object has the specified property"});
+    javascript_reference << QStringList({"Objects", "Object.keys(obj)", "Returns an array containing the names of all of the given object's own enumerable properties"});
+    javascript_reference << QStringList({"Objects", "Object.getOwnPropertyNames(obj)", "Returns an array of all properties (enumerable or not) found directly upon a given object"});
+    javascript_reference << QStringList({"Objects", "Object.getOwnPropertyNames(obj)", "Returns an array of all properties (enumerable or not) found directly upon a given object"});
 
     javascript_reference << QStringList({"Operators Arithmetic", "+", "Addition: x = y + 2;"});
     javascript_reference << QStringList({"Operators Arithmetic", "-", "Subtraction: x = y - 2;"});
