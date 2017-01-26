@@ -382,7 +382,7 @@ QString RegExIDE_Help_Text =
     "Your script must begin with <b>function replace_function(match) {</b> and end with <b>}</b>. "
     "Argument 'match' has at least one property, match.group_0 or match['0'], which captures the entire string "
     "found by <b>Find pattern</b>. If there are any captures in <b>Find pattern</b>, for example "
-    "'\\$(?<initial>\\d+)', these captures, if any, will be in properties match.group_1 or match['1'] "
+    "'\\$(?&lt;initial&gt;\\d+)', these captures, if any, will be in properties match.group_1 or match['1'] "
     "and match.group_initial or match.initial. "
     "Your script must also <b>return</b> return_value<b>;</b>, where return_value is the <b>Replace Text</b> "
     "corresponding to the argument 'match'. Run the examples supplied by the <b>Script Tab</b> to see how "
