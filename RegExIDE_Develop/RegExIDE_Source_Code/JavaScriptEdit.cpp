@@ -1163,40 +1163,41 @@ JSEdit::insertFromMimeData ( const QMimeData* source ) {
         QString paste_text = source->text();
         // Convert tab characters into tab modulus spaces
         paste_text = paste_text.replace("\t", QString(" ").repeated(JSEditPrivate_ref(Tab_Modulus)));
-        QStringList paste_lines = paste_text.split("\n");
-        if (paste_lines.count() == 1) {
-            QPlainTextEdit::insertPlainText(paste_text);
-        }
-        else {
-            // Indent pasted text (relatively) intelligently
-            QTextCursor txt_cursor = QPlainTextEdit::textCursor();
-            txt_cursor.movePosition(QTextCursor::StartOfLine, QTextCursor::KeepAnchor);
-            QString line_text_before_cursor = txt_cursor.selectedText();
-            if (line_text_before_cursor.indexOf(QRegExp("[^\\s]")) < 0) {
-                // Only whitespace before cursor
-                QString whitespace = line_text_before_cursor.replace("\t", QString(" ").repeated(JSEditPrivate_ref(Tab_Modulus)));
-                int minumum_whitespace_length = -1;
-                for (int line_idx = 1; line_idx < paste_lines.count(); line_idx += 1) {
-                    QString line_text = paste_lines.at(line_idx);
-                    int first_non_whitespace_idx = line_text.indexOf(QRegExp("[^\\s]"));
-                    if (minumum_whitespace_length < 0) minumum_whitespace_length = first_non_whitespace_idx;
-                    if (line_text.length() > 0) {
-                        minumum_whitespace_length = qMin(minumum_whitespace_length, first_non_whitespace_idx);
-                    }
-                }
+        QPlainTextEdit::insertPlainText(paste_text);
+//        QStringList paste_lines = paste_text.split("\n");
+//        if (paste_lines.count() == 1) {
+//            QPlainTextEdit::insertPlainText(paste_text);
+//        }
+//        else {
+//            // Indent pasted text (relatively) intelligently
+//            QTextCursor txt_cursor = QPlainTextEdit::textCursor();
+//            txt_cursor.movePosition(QTextCursor::StartOfLine, QTextCursor::KeepAnchor);
+//            QString line_text_before_cursor = txt_cursor.selectedText();
+//            if (line_text_before_cursor.indexOf(QRegExp("[^\\s]")) < 0) {
+//                // Only whitespace before cursor
+//                QString whitespace = line_text_before_cursor.replace("\t", QString(" ").repeated(JSEditPrivate_ref(Tab_Modulus)));
+//                int minumum_whitespace_length = -1;
+//                for (int line_idx = 1; line_idx < paste_lines.count(); line_idx += 1) {
+//                    QString line_text = paste_lines.at(line_idx);
+//                    int first_non_whitespace_idx = line_text.indexOf(QRegExp("[^\\s]"));
+//                    if (minumum_whitespace_length < 0) minumum_whitespace_length = first_non_whitespace_idx;
+//                    if (line_text.length() > 0) {
+//                        minumum_whitespace_length = qMin(minumum_whitespace_length, first_non_whitespace_idx);
+//                    }
+//                }
 
-                QString indented_text = "";
-                for (int line_idx = 0; line_idx < paste_lines.count(); line_idx += 1) {
-                    QString line_text = paste_lines.at(line_idx);
-                    line_text = line_text.mid(minumum_whitespace_length);
-                    if (line_idx > 0) indented_text += whitespace;
-                    indented_text += line_text;
-                    if (line_idx < (paste_lines.count() - 1)) indented_text += "\n";
-                }
-                QPlainTextEdit::insertPlainText(indented_text);
-            }
-            else QPlainTextEdit::insertPlainText(paste_text);
-        }
+//                QString indented_text = "";
+//                for (int line_idx = 0; line_idx < paste_lines.count(); line_idx += 1) {
+//                    QString line_text = paste_lines.at(line_idx);
+//                    line_text = line_text.mid(minumum_whitespace_length);
+//                    if (line_idx > 0) indented_text += whitespace;
+//                    indented_text += line_text;
+//                    if (line_idx < (paste_lines.count() - 1)) indented_text += "\n";
+//                }
+//                QPlainTextEdit::insertPlainText(indented_text);
+//            }
+//            else QPlainTextEdit::insertPlainText(paste_text);
+//        }
     }
 }
 

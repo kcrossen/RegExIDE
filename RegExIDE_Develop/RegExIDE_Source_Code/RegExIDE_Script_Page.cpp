@@ -263,29 +263,29 @@ R"~~~(
 // It can be used whenever an unknown number of matches to a single group ...
 // ... must be captured. First replace that single group w/ "$2", then ...
 // ... Use this script to replace "$2"s with a series as above.
-// Scripts must all begin with "function replace_function(match) {
-function replace_function(match) {
-    // Argument "match" has at least one property, match.group_0, which captures ...
+// Scripts must all begin with "function replace_function(match_obj) {
+function replace_function(match_obj) {
+    // Argument "match_obj" has at least one property, match_obj.group_0, which captures ...
     // ... entire string found by your regex, ...
-    // ... also accessible as match["group_0"] or match['0'].
-    // Property match.group_1 and match.group_initial or match.initial are ...
+    // ... also accessible as match_obj["group_0"] or match_obj['0'].
+    // Property match_obj.group_1 and match_obj.group_initial or match_obj.initial are ...
     // ... both the first capture group's capture in this case.
     // The part you write starts below here ...
 
-    // print(Object.keys(match));
-    // print(match.group_0, match.group_1, match.group_initial);
+    // print(Object.keys(match_obj));
+    // print(match_obj.group_0, match_obj.group_1, match_obj.group_initial);
 
     // Uncomment commented lines below to demo debug messages
     // print(typeof inc_val);
     if (typeof inc_val == "undefined") {
-        inc_val = parseInt(match.group_0.replace("$", ""));
+        inc_val = parseInt(match_obj.group_0.replace("$", ""));
         // Or, it could be done a second way as below
         // var pattern = /\d+/g;
-        // inc_val = parseInt(pattern.exec(match.group_0));
+        // inc_val = parseInt(pattern.exec(match_obj.group_0));
         // Or, it could be done a third way as below
-        // inc_val = parseInt(match.group_initial);
+        // inc_val = parseInt(match_obj.group_initial);
         // Or, it could be done a fourth way as below
-        // inc_val = parseInt(match.group_1);
+        // inc_val = parseInt(match_obj.group_1);
     }
     // print(inc_val);
     var ret_val = "\\" + inc_val.toString();
@@ -313,27 +313,32 @@ R"~~~(
 // This script demonstrates another solution similar to the demo example.
 // It is not intended for actual use w/ RegExIDE, but rather as a demonstration ...
 // ... of JavaScript programming techniques.
-// Scripts must all begin with "function replace_function(match) { ...
-function replace_function(match) {
-    // Argument "match" has at least one property, match.group_0, which captures ...
+// Scripts must all begin with "function replace_function(match_obj) { ...
+function replace_function(match_obj) {
+    // Argument "match_obj" has at least one property, match_obj.group_0, which captures ...
     // ... entire string found by your regex, ...
-    // ... also accessible as match["group_0"] or match['0'].
+    // ... also accessible as match_obj["group_0"] or match_obj['0'].
     // The part you write starts below here ...
 
-    return match.group_symbols.split("").reverse().join("") +
-           match.group_letters.split("").reverse().join("") +
-           match.group_numbers.split("").reverse().join("");
+    return match_obj.group_symbols.split("").reverse().join("") +
+           match_obj.group_letters.split("").reverse().join("") +
+           match_obj.group_numbers.split("").reverse().join("");
 
     // Or, equivalently as below
-    // return match["group_symbols"].split("").reverse().join("") +
-    //        match["group_letters"].split("").reverse().join("") +
-    //        match["group_numbers"].split("").reverse().join("");
+    // return match_obj["group_symbols"].split("").reverse().join("") +
+    //        match_obj["group_letters"].split("").reverse().join("") +
+    //        match_obj["group_numbers"].split("").reverse().join("");
+
+    // Or, equivalently as below
+    // return match_obj.symbols.split("").reverse().join("") +
+    //        match_obj.letters.split("").reverse().join("") +
+    //        match_obj.numbers.split("").reverse().join("");
 
     // Or, the solution below would match the demo exactly
-    // return match.group_3 + match.group_2 + match.group_1;
+    // return match_obj.group_3 + match_obj.group_2 + match_obj.group_1;
 
     // Or, equivalently as below
-    // return match["group_3"] + match["group_2"] + match["group_1"];
+    // return match_obj["group_3"] + match_obj["group_2"] + match_obj["group_1"];
 
     // ... and ends above here.
     // You must return a replacement string.
@@ -400,11 +405,11 @@ function draw_board(current_board) {
     return board_as_string;
 }
 
-// Scripts must all begin with "function replace_function(match) { ...
-function replace_function(match) {
-    // Argument "match" has at least one property, match.group_0, which captures ...
+// Scripts must all begin with "function replace_function(match_obj) { ...
+function replace_function(match_obj) {
+    // Argument "match_obj" has at least one property, match_obj.group_0, which captures ...
     // ... entire string found by your regex, ...
-    // ... also accessible as match["group_0"] or match['0'].
+    // ... also accessible as match_obj["group_0"] or match_obj['0'].
     // The part you write starts below here ...
 
     if (typeof board == "undefined") {
@@ -422,8 +427,8 @@ function replace_function(match) {
     else if (open_moves == 0) print("No moves left, must be a draw.");
     else {
         // If the user has entered a valid move, make it
-        var move_x = parseInt(match.x) - 1;
-        var move_y = parseInt(match.y) - 1;
+        var move_x = parseInt(match_obj.x) - 1;
+        var move_y = parseInt(match_obj.y) - 1;
         if (((move_x >= 0) && (move_x < 3)) &&
             ((move_y >= 0) && (move_y < 3))) {
             // The user plays 'X'
@@ -539,10 +544,14 @@ function replace_function(match) {
                         else if (test_board[win[2]][win[3]] == " ")  next_move = [ win[2], win[3] ];
                         else if (test_board[win[4]][win[5]] == " ")  next_move = [ win[4], win[5] ];
                         // If we haven't found this next move already, store it
-                        for (var next_move_idx = 0; next_move_idx < my_next_moves.length; next_move_idx++) {
-                            if (next_move == my_next_moves[next_move_idx]) break; // Found this move already
-                            else if ((next_move_idx + 1) >= my_next_moves.length) my_next_moves.push(next_move);
+                        var next_move_idx = 0;
+                        while (next_move_idx < my_next_moves.length) {
+                            if (next_move ==
+                                my_next_moves[next_move_idx]) break; // Found this move already
+                            else next_move_idx++;
                         }
+                        if (next_move_idx >=
+                            my_next_moves.length) my_next_moves.push(next_move);
                     }
                 }
                 if (my_next_moves.length >= 2) {
@@ -608,11 +617,11 @@ RegularExpressionIDE::onStarterScriptClicked ( bool ) {
     Script_Target->Set_PlainText("");
     QString script_text =
 R"~~~(
-// Scripts must all begin with "function replace_function(match) {
-function replace_function(match) {
-    // Argument "match" has at least one property, match.group_0, which captures ...
-    // ... entire string found by your regex, also accessible as match["group_0"].
-    // print(match.group_0);
+// Scripts must all begin with "function replace_function(match_obj) {
+function replace_function(match_obj) {
+    // Argument "match_obj" has at least one property, match_obj.group_0, which captures ...
+    // ... entire string found by your regex, also accessible as match_obj["group_0"].
+    // print(match_obj.group_0);
     // The part you write starts below here ...
 
 
@@ -710,7 +719,7 @@ RegularExpressionIDE::onRunScriptClicked ( bool ) {
     QString replace_text = "";
     duk_get_prop_string(Script_JS_Context, -1 /*index*/, "replace_function");
 
-    // Push matched text onto stack as match.group_0 argument ...
+    // Push matched text onto stack as match_obj.group_0 argument ...
     // ... (whether it's needed or not)
     // duk_push_string(Script_JS_Context, match_text.toLatin1().data());
     duk_idx_t obj_idx = duk_push_object(Script_JS_Context);

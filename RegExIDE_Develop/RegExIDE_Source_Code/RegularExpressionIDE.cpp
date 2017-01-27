@@ -118,7 +118,7 @@ R"~~~(
       "Category": "INSERT to UPDATE",
       "RegEx_Name": "INSERT to UPDATE Step 3",
       "RegEx_Pattern": "\\$2",
-      "Replace_Script": "function replace_function(match) {\n    if (typeof inc_val == \"undefined\") {\n        inc_val = parseInt(match.group_0.replace(\"$\", \"\"));\n    }\n    var ret_val = \"\\\\\" + inc_val.toString();\n    inc_val++;\n    return ret_val;\n}\n"
+      "Replace_Script": "function replace_function(match_obj) {\n    if (typeof inc_val == \"undefined\") {\n        inc_val = parseInt(match_obj.group_0.replace(\"$\", \"\"));\n    }\n    var ret_val = \"\\\\\" + inc_val.toString();\n    inc_val++;\n    return ret_val;\n}\n"
     },
     {
       "Series": "INSERT to UPDATE",
@@ -243,8 +243,12 @@ RegularExpressionIDE::closeEvent ( QCloseEvent *event )
 QString
 RegularExpressionIDE::Upgrade_Application_Initialization ( QString Initialization_JSON ) {
     QString ini_json = Initialization_JSON;
-    ini_json.replace("match.match_", "match.group_");
-    ini_json = ini_json.replace("match[\"match_", "match[\"group_");
+    ini_json.replace("(match)", "(match_obj)");
+    ini_json.replace("match.match_", "match_obj.group_");
+    ini_json.replace("match.group_", "match_obj.group_");
+    ini_json = ini_json.replace("match[\"match_", "match_obj[\"group_");
+    ini_json = ini_json.replace("match[\"group_", "match_obj[\"group_");
+    ini_json = ini_json.replace("match[", "match_obj[");
     return ini_json;
 }
 
