@@ -14,7 +14,7 @@ Simple directions for using the application are given on the <b>Help Tab</b>, an
 
 ![Alt text](/RegExIDE_Develop/Screenshots/RegExIDE_catalog_a.jpg?raw=true "Catalog Tab")
 
-![Alt text](/RegExIDE_Develop/Screenshots/RegExIDE_script_c.jpg?raw=true "Script Tab")
+![Alt text](/RegExIDE_Develop/Screenshots/RegExIDE_script_d.jpg?raw=true "Script Tab")
 
 ![Alt text](/RegExIDE_Develop/Screenshots/RegExIDE_apply_a.jpg?raw=true "Apply Tab")
 
