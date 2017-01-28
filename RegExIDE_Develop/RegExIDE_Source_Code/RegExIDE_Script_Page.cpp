@@ -525,8 +525,7 @@ function replace_function(match_obj) {
                 }
             }
 
-            var my_move = [-1,-1];
-
+            var fork_moves = [];
             // Test valid script moves looking for one that leaves script with two distinct winning ...
             // ... next moves. Since user can't block both next moves, script must be left with ...
             // ... at least one winning move.
@@ -557,25 +556,20 @@ function replace_function(match_obj) {
                 if (my_next_moves.length >= 2) {
                     // Script has at least two next move winners due to this move, ...
                     // ... both can't be blocked.
-                    my_move = valid_moves[move_idx];
-                    break;
+                    fork_moves.push(valid_moves[move_idx]);
                 }
             }
 
+            var my_move = [-1,-1];
+            // If there's a move that sets up two next mover winners, make it
+            if (fork_moves.length > 0) my_move = fork_moves[Math.floor(Math.random() * fork_moves.length)];
+            // If there's any good move, make it, otherwise pick a valid move at random and make it.
+            else if (corner_moves.length > 0) my_move = corner_moves[Math.floor(Math.random() * corner_moves.length)];
+            else if (valid_moves.length > 0) my_move = valid_moves[Math.floor(Math.random() * valid_moves.length)];
             if (make_valid_script_move(board, my_move)) {
                 open_moves--;
                 // Indicate script move already made
                 winner = "---";
-            }
-            else {
-                // If there's any good move, make it, otherwise pick a valid move at random and make it.
-                if (corner_moves.length > 0) my_move = corner_moves[Math.floor(Math.random() * corner_moves.length)];
-                else if (valid_moves.length > 0) my_move = valid_moves[Math.floor(Math.random() * valid_moves.length)];
-                if (make_valid_script_move(board, my_move)) {
-                    open_moves--;
-                    // Indicate script move already made
-                    winner = "---";
-                }
             }
         }
     }
