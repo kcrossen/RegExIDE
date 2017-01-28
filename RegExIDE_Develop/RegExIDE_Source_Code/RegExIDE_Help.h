@@ -221,7 +221,7 @@ QString RegExIDE_Help_Text =
     "<h2>Catalog Tab</h2>"
     "<p>"
     "Once a regular expression and replace pattern have been tested on the <b>Regular Expression Tab</b>, they "
-    "may be stored for repeated recall using the <b>Catalog Tab</b>. The <b>RegEx Catalog</b> becomes "
+    "may be stored for repeated recall using the <b>Catalog Tab</b>. The <b>Catalog</b> becomes "
     "a library of frequently used find/replace patterns or series of find/replace patterns. "
     "</p>"
         "<blockquote><b>Save</b> "
@@ -326,7 +326,7 @@ QString RegExIDE_Help_Text =
 
     "<h2>Script Tab</h2>"
     "<p>"
-    "Test scripts for use in the <b>RegEx Catalog</b>. To the right of the <b>Script</b> page there is a splitter "
+    "Test scripts for use in the <b>Catalog</b>. To the right of the <b>Script</b> page there is a splitter "
     "which, when double-clicked, will display a JavaScript reference cheat-sheet. Double-clicking the reference area "
     "again will hide the reference. When the reference is displayed, clicking an item will copy that item "
     "to the clipboard and ⌘-clicking an item will paste that item into the <b>Script Editor</b>. "
