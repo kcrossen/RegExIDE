@@ -103,7 +103,7 @@
 #include "MyWidgets.h"
 #include "PlainTextEdit.h"
 
-#include "JavaScriptEdit.h"
+#include "JavaScript_Editor.h"
 
 #include "OrderedVariantMap.h"
 #include "orderedJson.h"

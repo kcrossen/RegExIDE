@@ -21,8 +21,8 @@ HEADERS = \
     duk_config.h \
     duktape.h \
     RegExIDE_Copyright.h \
-    JavaScriptEdit.h \
-    RegExIDE_JavaScript_Reference.h
+    RegExIDE_JavaScript_Reference.h \
+    JavaScript_Editor.h
 
 # Alternative two-step build
 # HEADERS += pcre.h
@@ -41,7 +41,7 @@ SOURCES = \
     RegExIDE_Options_Reference_Page.cpp \
     RegExIDE_Main_Page.cpp \
     RegExIDE_Apply_Page.cpp \
-    JavaScriptEdit.cpp
+    JavaScript_Editor.cpp
 
 # One-step build
 DEFINES += PCRE_DISABLE_JIT
