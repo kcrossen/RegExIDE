@@ -196,7 +196,7 @@ private slots:
     onMenuPreferences ( );
 
     void
-    onMenuRegExCatalog ( );
+    onMenuCatalog ( );
 
     void
     onMenuClear ( );
@@ -372,11 +372,11 @@ private:
     PlainTextEdit *Catalog_Target;
     QCheckBox *Catalog_Target_Specified;
 
-    int RegEx_Catalog_Tab_Index;
+    int Catalog_Tab_Index;
 
 private:
     QWidget*
-    Initialize_RegEx_Catalog_Page_UI ( );
+    Initialize_Catalog_Page_UI ( );
 
     void
     Populate_RegEx_Catalog_Tree ( QVariantList RegEx_Catalog_Descriptors );

@@ -21,7 +21,7 @@
 #include "RegularExpressionIDE.h"
 
 QWidget*
-RegularExpressionIDE::Initialize_RegEx_Catalog_Page_UI ( ) {
+RegularExpressionIDE::Initialize_Catalog_Page_UI ( ) {
     QWidget* container = new QWidget();
     container->setContentsMargins(0, 0, 0, 0);
     container->setMinimumHeight(UI_Minimum_Height);

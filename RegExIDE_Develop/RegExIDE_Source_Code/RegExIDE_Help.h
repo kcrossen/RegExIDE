@@ -35,16 +35,16 @@ QString RegExIDE_Help_Text =
         "Still to be done. This may take some time. "
         "</blockquote>"
 
-    "<h3>RegEx Catalog Menu</h3>"
+    "<h3>Catalog Menu</h3>"
         "<blockquote><b>Clear</b> "
         "Clear text entries on one of three tabs <b>Regular Expression Tab</b>, <b>Apply Tab</b>, "
-        "or <b>RegEx Catalog Tab</b>. "
+        "or <b>Catalog Tab</b>. "
         "</blockquote>"
 
         "<blockquote><b>categories</b> "
         "These are stored RegEx 'formulas', organized by category. Click on a RegEx 'formula' to transfer 'formula' "
         "to the text entries one of three tabs <b>Regular Expression Tab</b>, <b>Apply Tab</b>, "
-        "or <b>RegEx Catalog Tab</b>. In the case of the <b>RegEx Catalog Tab</b>, the transferred 'formula' "
+        "or <b>Catalog Tab</b>. In the case of the <b>Catalog Tab</b>, the transferred 'formula' "
         "would probably be modified to create a new 'formula'. "
         "</blockquote>"
 
@@ -218,10 +218,10 @@ QString RegExIDE_Help_Text =
         "this will force trace to take as many trace steps as <b>Target text</b> makes possible. "
         "</blockquote>"
 
-    "<h2>RegEx Catalog Tab</h2>"
+    "<h2>Catalog Tab</h2>"
     "<p>"
     "Once a regular expression and replace pattern have been tested on the <b>Regular Expression Tab</b>, they "
-    "may be stored for repeated recall using the <b>RegEx Catalog Tab</b>. The <b>RegEx Catalog</b> becomes "
+    "may be stored for repeated recall using the <b>Catalog Tab</b>. The <b>RegEx Catalog</b> becomes "
     "a library of frequently used find/replace patterns or series of find/replace patterns. "
     "</p>"
         "<blockquote><b>Save</b> "
@@ -442,7 +442,7 @@ QString RegExIDE_Help_Text =
     "<h2>Apply Tab</h2>"
     "<p>"
     "Once a regular expression and replace pattern have been tested on the <b>Regular Expression Tab</b>, "
-    "and perhaps stored for repeated recall using the <b>RegEx Catalog Tab</b>, "
+    "and perhaps stored for repeated recall using the <b>Catalog Tab</b>, "
     "use the <b>Apply Tab</b> to run large-scale find/replace operations. "
     "</p>"
 

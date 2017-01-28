@@ -181,6 +181,7 @@ int main ( int argc, char *argv[] ) {
     copyright += Obligatory_PCRE_Copyright;
     copyright += Obligatory_DukTape_Copyright;
     copyright += Obligatory_X2_Copyright;
+    copyright += Obligatory_QtJson_Copyright;
 }
 
 RegularExpressionIDE::RegularExpressionIDE ( QWidget *parent ) : QMainWindow ( parent )
@@ -360,7 +361,7 @@ RegularExpressionIDE::Preferences_Menu_Initialize ( ) {
     menuBar()->addMenu(RegExIDE_Menu);
 
     // RegEx Catalog
-    QMenu *regex_catalog_menu = menuBar()->addMenu("RegExCatalog");
+    QMenu *regex_catalog_menu = menuBar()->addMenu("Catalog");
     regex_catalog_menu->addAction(tr("Clear"), this, SLOT(onMenuClear()));
     regex_catalog_menu->addSeparator();
 
@@ -383,7 +384,7 @@ RegularExpressionIDE::Preferences_Menu_Initialize ( ) {
 
                 // Now add item to submenu
                 QAction *item =
-                  regex_catalog_dictionary[category_name]->addAction(regex_name, this, SLOT(onMenuRegExCatalog()));
+                  regex_catalog_dictionary[category_name]->addAction(regex_name, this, SLOT(onMenuCatalog()));
 
                 QHash <QString, QVariant> setup_list;
                 // if (regex_descr.contains("Series"))
@@ -443,7 +444,7 @@ RegularExpressionIDE::onMenuPreferences ( ) {
 }
 
 void
-RegularExpressionIDE::onMenuRegExCatalog ( ) {
+RegularExpressionIDE::onMenuCatalog ( ) {
     QAction *sender_action = dynamic_cast<QAction*>(sender());
     QHash<QString, QVariant> setup_list = sender_action->data().toHash();
 
@@ -465,7 +466,7 @@ RegularExpressionIDE::onMenuRegExCatalog ( ) {
             Target_Text_Edit->Set_PlainText(setup_list.value("Target").toString());
         }
     }
-    else if (RegExIDE_Pages->currentIndex() == RegEx_Catalog_Tab_Index) {
+    else if (RegExIDE_Pages->currentIndex() == Catalog_Tab_Index) {
         if (setup_list.contains("RegEx_Pattern")) {
             // Don't defeat Undo/Redo
             Catalog_RegEx_Pattern->Set_PlainText(setup_list.value("RegEx_Pattern").toString());
@@ -517,7 +518,7 @@ RegularExpressionIDE::onMenuClear ( ) {
         Replace_Pattern_Edit->Set_PlainText("");
         Target_Text_Edit->Set_PlainText("");
     }
-    else if (RegExIDE_Pages->currentIndex() == RegEx_Catalog_Tab_Index) {
+    else if (RegExIDE_Pages->currentIndex() == Catalog_Tab_Index) {
         // Don't defeat Undo/Redo
         Catalog_RegEx_Pattern->Set_PlainText("");
         Catalog_Replace_Pattern->Set_PlainText("");
@@ -537,7 +538,7 @@ RegularExpressionIDE::onMenuClear ( ) {
 void
 RegularExpressionIDE::onCopyFromRegularExpressionTabClicked ( bool ) {
     if (RegEx_Valid) {
-        if (RegExIDE_Pages->currentIndex() == RegEx_Catalog_Tab_Index) {
+        if (RegExIDE_Pages->currentIndex() == Catalog_Tab_Index) {
             // Don't defeat Undo/Redo
             Catalog_RegEx_Pattern->Set_PlainText(RegEx_Pattern_Edit->toPlainText());
             Catalog_Replace_Pattern->Set_PlainText(Replace_Pattern_Edit->toPlainText());
@@ -632,9 +633,9 @@ RegularExpressionIDE::UI_Initialize ( ) {
     trace_page->setMinimumHeight(UI_Minimum_Height);
     Trace_Tab_Index = RegExIDE_Pages->addTab(trace_page, tr("Trace"));
 
-    QWidget* regex_catalog_page = Initialize_RegEx_Catalog_Page_UI();
-    regex_catalog_page->setMinimumHeight(UI_Minimum_Height);
-    RegEx_Catalog_Tab_Index = RegExIDE_Pages->addTab(regex_catalog_page, tr("RegEx Catalog"));
+    QWidget* catalog_page = Initialize_Catalog_Page_UI();
+    catalog_page->setMinimumHeight(UI_Minimum_Height);
+    Catalog_Tab_Index = RegExIDE_Pages->addTab(catalog_page, tr("Catalog"));
 
     QWidget* script_page = Initialize_Script_Page_UI();
     script_page->setMinimumHeight(UI_Minimum_Height);
