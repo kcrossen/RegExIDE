@@ -100,7 +100,7 @@
 
 #include <QtAlgorithms>
 
-#include "MyWidgets.h"
+#include "ExtendWidgets.h"
 #include "PlainTextEdit.h"
 
 #include "JavaScript_Editor.h"

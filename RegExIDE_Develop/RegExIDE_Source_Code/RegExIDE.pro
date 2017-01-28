@@ -11,7 +11,6 @@ TEMPLATE = app
 HEADERS = \
     RegularExpressionIDE.h \
     PlainTextEdit.h \
-    MyWidgets.h \
     OrderedVariantMap.h \
     orderedJson.h \
     RegExIDE_Regular_Expression_Reference.h \
@@ -22,7 +21,8 @@ HEADERS = \
     duktape.h \
     RegExIDE_Copyright.h \
     RegExIDE_JavaScript_Reference.h \
-    JavaScript_Editor.h
+    JavaScript_Editor.h \
+    ExtendWidgets.h
 
 # Alternative two-step build
 # HEADERS += pcre.h
@@ -30,7 +30,6 @@ HEADERS = \
 SOURCES = \
     RegularExpressionIDE.cpp \
     PlainTextEdit.cpp \
-    MyWidgets.cpp \
     PCRE_Trace.c \
     OrderedVariantMap.cpp \
     orderedJson.cpp \
@@ -41,7 +40,8 @@ SOURCES = \
     RegExIDE_Options_Reference_Page.cpp \
     RegExIDE_Main_Page.cpp \
     RegExIDE_Apply_Page.cpp \
-    JavaScript_Editor.cpp
+    JavaScript_Editor.cpp \
+    ExtendWidgets.cpp
 
 # One-step build
 DEFINES += PCRE_DISABLE_JIT
