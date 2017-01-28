@@ -291,11 +291,19 @@ QString RegExIDE_Help_Text =
         "interspersed with other text. "
         "</blockquote>"
 
-        "<blockquote><b>Scripted (replace pattern)</b> "
+        "<blockquote><b>Script (replace pattern)</b> "
         "This tells the catalog that the displayed <b>Replace pattern</b> is a script, see <b>Script Tab</b> below. "
         "</blockquote>"
 
-        "<blockquote><b>Replace pattern specified</b> "
+        "<blockquote><b>From Script</b> "
+        "Copy script from <b>Script Tab</b> into <b>Replace pattern</b>, see <b>Script Tab</b> below. "
+        "</blockquote>"
+
+        "<blockquote><b>To Script</b> "
+        "Copy <b>Replace pattern</b> into <b>Script Tab</b>, see <b>Script Tab</b> below. "
+        "</blockquote>"
+
+        "<blockquote><b>Force if empty</b> "
         "If the <b>Replace pattern</b> is empty, this tells the catalog that the empty <b>Replace pattern</b> should "
         "be stored anyway. For example, you want to remove instances found by the <b>Find pattern</b> from "
         "the <b>Target</b> completely, in other words, replace them with nothing. "
@@ -305,7 +313,7 @@ QString RegExIDE_Help_Text =
         "Normally this would be empty, but as a demonstration for example, you may wish to store an example target text. "
         "</blockquote>"
 
-        "<blockquote><b>Target specified</b> "
+        "<blockquote><b>Force if empty</b> "
         "If the <b>Target</b> is empty, this tells the catalog that the empty <b>Target</b> should "
         "be stored anyway. Normally this would be true, but as a demonstration for example, you may wish to "
         "store an example target text. "

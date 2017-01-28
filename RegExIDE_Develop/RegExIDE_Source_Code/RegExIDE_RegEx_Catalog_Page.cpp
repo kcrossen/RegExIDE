@@ -222,10 +222,21 @@ RegularExpressionIDE::Initialize_Catalog_Page_UI ( ) {
     replace_pattern_layout->setContentsMargins(0, 0, 0, 0);
     replace_pattern_layout->addWidget(new QLabel(tr("<b>Replace pattern</b>")), 0);
     replace_pattern_layout->addSpacing(4);
-    Catalog_Replace_Scripted = new QCheckBox("Scripted");
+    Catalog_Replace_Scripted = new QCheckBox("Script");
     replace_pattern_layout->addWidget(Catalog_Replace_Scripted, 0);
     replace_pattern_layout->addStretch(50);
-    Catalog_Replace_Pattern_Specified = new QCheckBox(tr("Replace pattern specified"));
+
+    QToolButton *from_script_button = new QToolButton();
+    from_script_button->setText(tr("From Script"));
+    connect(from_script_button, SIGNAL(clicked(bool)), this, SLOT(onFromScriptClicked(bool)));
+    replace_pattern_layout->addWidget(from_script_button, 0);
+    QToolButton *to_script_button = new QToolButton();
+    to_script_button->setText(tr("To Script"));
+    connect(to_script_button, SIGNAL(clicked(bool)), this, SLOT(onToScriptClicked(bool)));
+    replace_pattern_layout->addWidget(to_script_button, 0);
+
+    replace_pattern_layout->addStretch(50);
+    Catalog_Replace_Pattern_Specified = new QCheckBox(tr("Force if empty"));
     replace_pattern_layout->addWidget(Catalog_Replace_Pattern_Specified, 0);
 
     editor_container_layout->addLayout(replace_pattern_layout, 0);
@@ -238,7 +249,7 @@ RegularExpressionIDE::Initialize_Catalog_Page_UI ( ) {
     target_layout->setContentsMargins(0, 0, 0, 0);
     target_layout->addWidget(new QLabel(tr("<b>Target</b>")), 0);
     target_layout->addStretch(50);
-    Catalog_Target_Specified = new QCheckBox(tr("Target specified"));
+    Catalog_Target_Specified = new QCheckBox(tr("Force if empty"));
     target_layout->addWidget(Catalog_Target_Specified, 0);
 
     editor_container_layout->addLayout(target_layout, 0);
@@ -551,6 +562,24 @@ void
 RegularExpressionIDE::onUpdateRegExClicked ( bool ) {
     OrderedVariantMap regex_descr = RegEx_Descriptor_From_Edit();
     RegEx_Catalog_Edit_Item->setData(0, Qt::UserRole, fromOrderedMap(regex_descr));
+}
+
+void
+RegularExpressionIDE::onFromScriptClicked ( bool ) {
+    QString script_text = Script_JavaScript_Editor->toPlainText();
+    if (script_text.length() > 0) {
+        Catalog_Replace_Pattern->Set_PlainText(script_text);
+        Catalog_Replace_Scripted->setChecked(true);
+    }
+}
+
+void
+RegularExpressionIDE::onToScriptClicked ( bool ) {
+    QString script_text = Catalog_Replace_Pattern->toPlainText();
+    if ((script_text.length() > 0) and
+        Catalog_Replace_Scripted->isChecked()) {
+        Script_JavaScript_Editor->Set_PlainText(script_text);
+    }
 }
 
 void

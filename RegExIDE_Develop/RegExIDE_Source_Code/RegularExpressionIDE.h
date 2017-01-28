@@ -423,6 +423,12 @@ private slots:
     onUpdateRegExClicked ( bool = false );
 
     void
+    onFromScriptClicked ( bool = false );
+
+    void
+    onToScriptClicked ( bool = false );
+
+    void
     onSaveCatalogClicked ( bool = false );
 
     void
