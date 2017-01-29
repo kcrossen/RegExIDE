@@ -697,7 +697,7 @@ RegularExpressionIDE::onCurrentPageChanged ( int new_current_tab_index ) {
 
 #include "RegExIDE_Trace_Page.cpp"
 
-#include "RegExIDE_RegEx_Catalog_Page.cpp"
+#include "RegExIDE_Catalog_Page.cpp"
 
 #include "RegExIDE_Script_Page.cpp"
 

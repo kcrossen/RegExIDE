@@ -35,13 +35,13 @@ SOURCES = \
     orderedJson.cpp \
     duktape.c \
     RegExIDE_Script_Page.cpp \
-    RegExIDE_RegEx_Catalog_Page.cpp \
     RegExIDE_Trace_Page.cpp \
     RegExIDE_Options_Reference_Page.cpp \
     RegExIDE_Main_Page.cpp \
     RegExIDE_Apply_Page.cpp \
     JavaScript_Editor.cpp \
-    ExtendWidgets.cpp
+    ExtendWidgets.cpp \
+    RegExIDE_Catalog_Page.cpp
 
 # One-step build
 DEFINES += PCRE_DISABLE_JIT
