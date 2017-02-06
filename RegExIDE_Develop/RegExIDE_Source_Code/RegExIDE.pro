@@ -79,5 +79,7 @@ HEADERS += \
     pcre/pcre_internal.h \
     pcre/ucp.h
 
+ICON = RegExIDE_Blue_Icon.icns
+
 # Alternative two-step build
 # LIBS += libpcre_rx.a

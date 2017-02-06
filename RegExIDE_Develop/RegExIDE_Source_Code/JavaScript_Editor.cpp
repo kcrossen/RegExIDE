@@ -345,6 +345,10 @@ JSHighlighter::highlightBlock ( const QString &text ) {
             } else if (ch.isDigit()) {
                 ++i;
                 state = Number;
+            } else if (((ch == '+') or (ch == '-') or (ch == '.')) and
+                       next_ch.isDigit()) {
+                ++i;
+                state = Number;
             } else if (ch.isLetter() or (ch == '_') or (ch == '$')) {
                 ++i;
                 state = Identifier;
@@ -364,9 +368,9 @@ JSHighlighter::highlightBlock ( const QString &text ) {
             } else {
                 if (not QString("(){}[]").contains(ch))
                     setFormat(start, 1, m_colors[JSEdit::Operator]);
-                if ((ch =='{') or (ch == '}')) {
+                if ((ch == Open_Fold_Bracket) or (ch == Close_Fold_Bracket)) {
                     bracketPositions += i;
-                    if (ch == '{')
+                    if (ch == Open_Fold_Bracket)
                         bracketLevel++;
                     else
                         bracketLevel--;
@@ -377,7 +381,10 @@ JSHighlighter::highlightBlock ( const QString &text ) {
             break;
 
         case Number:
-            if (ch.isSpace() or (not ch.isDigit())) {
+            if (ch.isSpace() or
+                (not (ch.isDigit() or (ch == '.') or
+                      (ch == '+') or (ch == '-') or
+                      (ch == 'E') or (ch == 'e')))) {
                 setFormat(start, i - start, m_colors[JSEdit::Number]);
                 state = Start;
             } else {
@@ -842,6 +849,8 @@ int
 JSEdit::Compute_Current_Brace_Indent_Level ( int Current_Position ) {
     // Returns brace_indent_level in units of Tab_Modulus
     int match_position = Current_Position;
+    if (match_position >= JSEditPrivate_ref(Bracket_Text).length())
+        match_position = JSEditPrivate_ref(Bracket_Text).length() - 1;
     int brace_indent_level = 0;
     while (match_position >= 0) {
         if (JSEditPrivate_ref(Bracket_Text).at(match_position) == '}') brace_indent_level -= 1;
@@ -872,7 +881,7 @@ JSEdit::Compute_Current_Paren_Indent ( QString Current_Text,
     // Search back for closest unmatched "(", how is it "indented"?
     int paren_level = 0;
     int paren_position = Current_Position;
-    while (paren_position > 0) {
+    while (paren_position >= 0) {
         if (bracket_text.at(paren_position) == QChar('{')) break;
         else if (bracket_text.at(paren_position) == QChar(')')) paren_level -= 1;
         else if (bracket_text.at(paren_position) == QChar('(')) {
@@ -880,11 +889,13 @@ JSEdit::Compute_Current_Paren_Indent ( QString Current_Text,
             if (paren_level == 1) {
                 // Found closest unmatched "(", now find immediately preceding newline
                 int newline_position = paren_position;
-                while ((newline_position > 0) and
+                while ((newline_position >= 0) and
                        (not (Current_Text.at(newline_position) == QChar('\n')))) newline_position -= 1;
                 // Found immediately preceding newline
-                if ((newline_position >= 0) and
-                    (Current_Text.at(newline_position) == QChar('\n'))) {
+                if (((newline_position >= 0) and
+                     (Current_Text.at(newline_position) == QChar('\n'))) or
+                    // Start of text is also 'newline'
+                    (newline_position == -1)) {
                     paren_indent = paren_position - newline_position;
                     break;
                 }
@@ -949,18 +960,18 @@ JSEdit::keyPressEvent ( QKeyEvent* event ) {
     }
     else if (event->key() == Qt::Key_BraceLeft) {
         // Insert formatted brace pair, ready for 'braced' code
-        QTextCursor initial_txt_cursor = QPlainTextEdit::textCursor();
-        int initial_position = initial_txt_cursor.position();
+        int initial_position = QPlainTextEdit::textCursor().position();
         QPlainTextEdit::insertPlainText("{\n}");
-        QTextCursor final_txt_cursor = QPlainTextEdit::textCursor();
+        QTextCursor txt_cursor = QPlainTextEdit::textCursor();
 
-        final_txt_cursor.setPosition(initial_position, QTextCursor::KeepAnchor);
-        QPlainTextEdit::setTextCursor(final_txt_cursor);
+        txt_cursor.setPosition(initial_position, QTextCursor::KeepAnchor);
+        QPlainTextEdit::setTextCursor(txt_cursor);
         // Use general formatting code
         Format_Selected_Text_Lines();
 
-        final_txt_cursor.setPosition(initial_position + 1);
-        QPlainTextEdit::setTextCursor(final_txt_cursor);
+        // Put cursor right after the 'keyboarded' left brace, as expected
+        txt_cursor.setPosition(initial_position + 1);
+        QPlainTextEdit::setTextCursor(txt_cursor);
     }
     else if ((event->key() == Qt::Key_Return) and JSEditPrivate_ref(AutoIndentEnabled)) {
         QTextCursor txt_cursor = QPlainTextEdit::textCursor();
@@ -1185,13 +1196,12 @@ JSEdit::insertFromMimeData ( const QMimeData* source ) {
         }
         else {
             // Indent pasted text intelligently ...
-            QTextCursor initial_txt_cursor = QPlainTextEdit::textCursor();
-            int initial_position = initial_txt_cursor.position();
+            int initial_position = QPlainTextEdit::textCursor().position();
             QPlainTextEdit::insertPlainText(paste_text);
-            QTextCursor final_txt_cursor = QPlainTextEdit::textCursor();
+            QTextCursor txt_cursor = QPlainTextEdit::textCursor();
 
-            final_txt_cursor.setPosition(initial_position, QTextCursor::KeepAnchor);
-            QPlainTextEdit::setTextCursor(final_txt_cursor);
+            txt_cursor.setPosition(initial_position, QTextCursor::KeepAnchor);
+            QPlainTextEdit::setTextCursor(txt_cursor);
             // ... using general formatting code
             Format_Selected_Text_Lines();
         }
@@ -1396,7 +1406,7 @@ JSEdit::findClosingConstruct ( const QTextBlock &block ) {
     int offset = block.position();
     foreach (int pos, blockData->bracketPositions) {
         int absPos = offset + pos;
-        if (doc->characterAt(absPos) == '{') {
+        if (doc->characterAt(absPos) == Open_Fold_Bracket) {
             int matchPos = Bracket_Match_Position(absPos); // findClosingMatch(doc, absPos);
             if (matchPos >= 0)
                 return matchPos;

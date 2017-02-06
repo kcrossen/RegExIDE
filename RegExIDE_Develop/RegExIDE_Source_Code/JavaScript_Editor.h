@@ -92,6 +92,9 @@ public:
     // ... should be added at the end of this "structure" (class).
 };
 
+#define Open_Fold_Bracket '{'
+#define Close_Fold_Bracket '}'
+
 class JSEdit: public QPlainTextEdit
 {
     Q_OBJECT
